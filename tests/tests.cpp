@@ -831,6 +831,33 @@ TEST_CASE("string conversion and streaming give the summary", "[conversion]")
     REQUIRE(s.find(v.ip) != std::string::npos);
 }
 
+TEST_CASE("the summary names the maker once", "[conversion]")
+{
+    const auto gen = make_loaded_generator();
+    dasmig::device_request r = at(year{2025} / 6 / 1);
+    int named_after_maker = 0;
+    for (const auto* platform : {"android-phone", "android-tablet"})
+    {
+        r.platform = platform;
+        for (std::uint64_t s = 0; s < 4000; ++s)
+        {
+            const auto d = gen.get_device(r, s);
+            const auto summary = d.to_string();
+            REQUIRE(summary.find("(" + d.maker + " " + d.maker + " ") == std::string::npos);
+            if (d.model.starts_with(d.maker + " "))
+            {
+                ++named_after_maker;
+                REQUIRE(summary.find("(" + d.model + ")") != std::string::npos); // "(OnePlus 12)"
+            }
+            else if (!d.model.empty())
+            {
+                REQUIRE(summary.find("(" + d.maker + " " + d.model + ")") != std::string::npos); // "(Samsung Galaxy A54)"
+            }
+        }
+    }
+    REQUIRE(named_after_maker > 0); // OnePlus, Honor and the Xiaomi Pad 5 are drawn
+}
+
 TEST_CASE("to_json and signature", "[json]")
 {
     const auto gen = make_loaded_generator();
