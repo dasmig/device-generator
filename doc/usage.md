@@ -159,7 +159,7 @@ In the default `override` mode a row replaces the loaded row with the same key a
 `to_json()` writes every field and a `signature` with the seed and `data_hash()`, the hash of the loaded tables and layers:
 
 ```json
-{"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"27.0","browser":"safari","browser_version":"27.0","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"…"}}
+{"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"26.7","browser":"safari","browser_version":"26.7","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.7 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"…"}}
 ```
 
 `to_json(core::json_writer&)` writes into a larger document.
@@ -209,6 +209,6 @@ About 9 µs a device on one thread (110,000 a second, `lite`, clang `-O2`).
 | Exception | When |
 |-----------|------|
 | `std::runtime_error` | A generation call before data is loaded |
-| `std::invalid_argument` | A reference date before 2021-01-01 or not a valid date; an unknown country or platform; a kind that contradicts the platform; a browser that does not run on the platform or the OS version by the date; a country without registered addresses and no `safe`; a `locale` that is not a BCP 47 tag (letters, digits, `-`, `_`) |
+| `std::invalid_argument` | A reference date before 2021-01-01 or not a valid date; an unknown country or platform; a kind that contradicts the platform; a browser that does not run on the platform or the OS version by the date; a country without registered addresses and no `safe`; a `locale` that is not a BCP 47 tag (a language of 2 to 8 letters, then subtags of 1 to 8 letters or digits, separated by `-` or `_`) |
 | `dasmig::core::tsv_error` | A malformed table or layer (message gives file, line and column); the data is unchanged |
 | `std::invalid_argument` from `extend(path)` | A file whose name is not one of the tables |

@@ -2,7 +2,7 @@
 # Run: doxygen Doxyfile
 
 PROJECT_NAME           = "Device Generator"
-PROJECT_NUMBER         = 1.0.0
+PROJECT_NUMBER         = 1.0.1
 PROJECT_BRIEF          = "Devices, browsers, user agents and IP addresses that fit together for C++23"
 PROJECT_LOGO           =
 

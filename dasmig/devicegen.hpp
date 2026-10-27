@@ -19,6 +19,7 @@
 #include <map>
 #include <numbers>
 #include <optional>
+#include <ranges>
 #include <ostream>
 #include <span>
 #include <stdexcept>
@@ -93,9 +94,10 @@ struct device_request
     ///        that has it.
     std::optional<std::string> browser{}; // NOLINT(readability-redundant-member-init)
 
-    /// @brief A BCP 47 locale (`pt-BR`; letters, digits, `-` and `_`, at most
-    ///        35 characters) for the `Accept-Language` header; empty leaves the
-    ///        header empty.
+    /// @brief A BCP 47 locale (`pt-BR`, `pt_BR`, `zh-Hant-TW`: a language of
+    ///        2 to 8 letters, then subtags of 1 to 8 letters or digits, at
+    ///        most 35 characters) for the `Accept-Language` header; empty
+    ///        leaves the header empty.
     std::string locale{}; // NOLINT(readability-redundant-member-init)
 
     /// @brief The date the device is seen at: models, OS and browser versions
@@ -2046,19 +2048,37 @@ class dvg
         return fill_template_(best->text, [&](std::string_view name) { return ua_value_(name, c); });
     }
 
+    // Whether a tag ('_' already turned into '-') has the shape of BCP 47: a
+    // language of 2 to 8 letters, then subtags of 1 to 8 letters or digits.
+    static bool is_language_tag_(std::string_view tag)
+    {
+        if (tag.size() > 35) return false;
+        const auto alpha = [](char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
+        const auto alnum = [&](char c) { return alpha(c) || (c >= '0' && c <= '9'); };
+        bool first = true;
+        for (const auto part : std::views::split(tag, '-'))
+        {
+            const std::string_view sub{part.begin(), part.end()};
+            if (sub.empty() || sub.size() > 8) return false;
+            if (first ? sub.size() < 2 || !std::ranges::all_of(sub, alpha) : !std::ranges::all_of(sub, alnum))
+                return false;
+            first = false;
+        }
+        return true;
+    }
+
     // "pt-BR" -> "pt-BR,pt;q=0.9,en;q=0.8"; "en-US" -> "en-US,en;q=0.9".
     static std::string accept_language_(std::string_view locale)
     {
         if (locale.empty()) return {};
-        const bool tag_chars = std::ranges::all_of(locale, [](char c) {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_';
-        });
-        if (locale.size() > 35 || !tag_chars || locale.front() == '-' || locale.front() == '_')
-            throw std::invalid_argument("device-generator: the locale must be a BCP 47 tag such as pt-BR");
         std::string tag{locale};
         std::ranges::replace(tag, '_', '-');
+        if (!is_language_tag_(tag))
+            throw std::invalid_argument("device-generator: the locale must be a BCP 47 tag such as pt-BR");
         const auto dash = tag.find('-');
-        const std::string lang = tag.substr(0, dash);
+        std::string lang = tag.substr(0, dash);
+        for (auto& c : lang)
+            if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
         std::string out = tag;
         double q = 0.9;
         if (dash != std::string::npos)
