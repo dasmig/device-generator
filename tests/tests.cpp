@@ -262,7 +262,8 @@ TEST_CASE("a locale that is not a language tag is rejected", "[errors]")
 {
     const auto gen = make_loaded_generator();
     dasmig::device_request r;
-    for (const auto* bad : {"pt-BR\r\nX-Injected: 1", "en US", "-en", "pt;q=1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
+    for (const auto* bad : {"pt-BR\r\nX-Injected: 1", "en US", "-en", "pt;q=1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                            "pt-", "pt--BR", "pt_", "123", "e", "en-toolongsub", "1en-US"})
     {
         r.locale = bad;
         REQUIRE_THROWS_AS(gen.get_device(r, 1), std::invalid_argument);
@@ -750,6 +751,10 @@ TEST_CASE("accept-language from the locale", "[request]")
     REQUIRE(lang("en-US") == "en-US,en;q=0.9");
     REQUIRE(lang("pt_BR") == "pt-BR,pt;q=0.9,en;q=0.8");
     REQUIRE(lang("ja") == "ja,en;q=0.9");
+    // The fallback entries are lower case, so English is not listed twice.
+    REQUIRE(lang("EN-us") == "EN-us,en;q=0.9");
+    REQUIRE(lang("PT-br") == "PT-br,pt;q=0.9,en;q=0.8");
+    REQUIRE(lang("es-419") == "es-419,es;q=0.9,en;q=0.8");
 }
 
 TEST_CASE("unweighted draws are uniform over what is possible", "[request]")
