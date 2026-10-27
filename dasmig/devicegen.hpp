@@ -92,8 +92,9 @@ struct device_request
     ///        `samsung`). The platform, when drawn, is one that has it.
     std::optional<std::string> browser{}; // NOLINT(readability-redundant-member-init)
 
-    /// @brief A BCP 47 locale (`pt-BR`) for the `Accept-Language` header;
-    ///        empty leaves the header empty.
+    /// @brief A BCP 47 locale (`pt-BR`; letters, digits, `-` and `_`, at most
+    ///        35 characters) for the `Accept-Language` header; empty leaves the
+    ///        header empty.
     std::string locale{}; // NOLINT(readability-redundant-member-init)
 
     /// @brief The date the device is seen at: models, OS and browser versions
@@ -263,6 +264,7 @@ enum class device_table : std::uint8_t
     adoption,        ///< `adoption.tsv`: how fast versions and models spread.
     version_shares,  ///< `version_shares.tsv`: explicit OS version shares by date.
     requirements,    ///< `requirements.tsv`: the oldest OS a browser version runs on.
+    bundled,         ///< `bundled.tsv`: the browser version an OS version ships with.
     browser_shares,  ///< `browser_shares.tsv`: browsers by OS and country.
     ua_templates,    ///< `ua_templates.tsv`: user-agent formats.
     screens,         ///< `screens.tsv`: screen sizes where the model has none.
@@ -331,8 +333,9 @@ class dvg
     /// @throws std::invalid_argument If the reference date is before
     ///         device_request::earliest_reference_date or not a valid date, the
     ///         country, platform or browser is unknown, the kind contradicts
-    ///         the platform, the browser does not run on the platform, or
-    ///         the country has no registered addresses (unless `safe`).
+    ///         the platform, the browser does not run on the platform, the
+    ///         country has no registered addresses (unless `safe`), or the
+    ///         locale is not a BCP 47 tag.
     [[nodiscard]] device get_device(const device_request& request, std::uint64_t call_seed) const
     {
         require_data_();
@@ -633,12 +636,12 @@ class dvg
     // -- Tables -----------------------------------------------------------
 
     static constexpr std::string_view library_name_ = "device-generator";
-    static constexpr std::size_t table_count_ = 15;
+    static constexpr std::size_t table_count_ = 16;
     static constexpr std::array<table, table_count_> all_tables_{
         table::countries,      table::platforms,    table::platform_shares, table::maker_shares,
         table::models,         table::releases,     table::adoption,        table::version_shares,
-        table::requirements,   table::browser_shares, table::ua_templates,  table::screens,
-        table::ipv4,           table::ipv6,         table::reserved};
+        table::requirements,   table::bundled,      table::browser_shares,  table::ua_templates,
+        table::screens,        table::ipv4,         table::ipv6,            table::reserved};
 
     using documents = std::array<std::optional<core::tsv_document>, table_count_>;
     using tables = std::array<core::layered_table, table_count_>;
@@ -658,6 +661,7 @@ class dvg
         case table::adoption: return "adoption.tsv";
         case table::version_shares: return "version_shares.tsv";
         case table::requirements: return "requirements.tsv";
+        case table::bundled: return "bundled.tsv";
         case table::browser_shares: return "browser_shares.tsv";
         case table::ua_templates: return "ua_templates.tsv";
         case table::screens: return "screens.tsv";
@@ -690,6 +694,8 @@ class dvg
             return {.key = {"product", "version", "date"}, .required = {"share"}, .optional = {}};
         case table::requirements:
             return {.key = {"browser", "os", "from_version"}, .required = {"min_os"}, .optional = {}};
+        case table::bundled:
+            return {.key = {"os", "os_version", "browser"}, .required = {"min_browser"}, .optional = {}};
         case table::browser_shares:
             return {.key = {"country", "os", "browser"}, .required = {"weight"}, .optional = {}};
         case table::ua_templates:
@@ -709,7 +715,8 @@ class dvg
                 core::layered_table{schema_(table::platform_shares)}, core::layered_table{schema_(table::maker_shares)},
                 core::layered_table{schema_(table::models)},        core::layered_table{schema_(table::releases)},
                 core::layered_table{schema_(table::adoption)},      core::layered_table{schema_(table::version_shares)},
-                core::layered_table{schema_(table::requirements)},  core::layered_table{schema_(table::browser_shares)},
+                core::layered_table{schema_(table::requirements)},  core::layered_table{schema_(table::bundled)},
+                core::layered_table{schema_(table::browser_shares)},
                 core::layered_table{schema_(table::ua_templates)},  core::layered_table{schema_(table::screens)},
                 core::layered_table{schema_(table::ipv4)},          core::layered_table{schema_(table::ipv6)},
                 core::layered_table{schema_(table::reserved)}};
@@ -821,6 +828,7 @@ class dvg
         string_map<adoption_row> adoption;
         string_map<string_map<std::vector<std::pair<int, double>>>> version_shares; // product -> version -> (day, share)
         string_map<std::vector<requirement>> requirements; // browser \t os
+        string_map<std::vector<std::pair<version_parts, int>>> bundled; // browser \t os -> OS version, min browser
         string_map<weighted_keys> browser_shares;     // country \t os -> browser, weight
         string_map<std::vector<ua_template>> ua_templates; // browser \t os
         string_map<std::vector<screen_row>> screens;  // country \t os
@@ -1132,6 +1140,11 @@ class dvg
             if (row.get<int>("from_version") < 0) throw row.error("from_version", "must not be negative");
             (void)version_(row, "min_os");
             break;
+        case table::bundled:
+            (void)nonempty_(row, "os");
+            (void)version_(row, "os_version");
+            if (row.get<int>("min_browser") < 0) throw row.error("min_browser", "must not be negative");
+            break;
         case table::ua_templates: (void)nonempty_(row, "template"); break;
         case table::screens: validate_screens_(row); break;
         case table::ipv4: validate_ipv4_(row); break;
@@ -1237,6 +1250,11 @@ class dvg
         {
             m.requirements[join_({row.get<std::string>("browser"), row.get<std::string>("os")})].push_back(
                 {.from = row.get<int>("from_version"), .min_os = version_(row, "min_os")});
+        }
+        for (const auto& row : rows(table::bundled))
+        {
+            m.bundled[join_({row.get<std::string>("browser"), row.get<std::string>("os")})].emplace_back(
+                version_(row, "os_version"), row.get<int>("min_browser"));
         }
     }
 
@@ -1545,8 +1563,6 @@ class dvg
                std::ranges::any_of(*makers, [](const auto& m) { return m.first == "Samsung" && m.second > 0.0; });
     }
 
-    // Platform weights in a country: its percentages for the platforms it lists; the others
-    // share the rest by global weight. Zero for platforms the kind or browser rules out.
     // A platform's percentage in a country's shares, if the country lists it.
     static const double* share_of_(const weighted_keys* shares, std::string_view key)
     {
@@ -1747,14 +1763,24 @@ class dvg
         return std::string{browser};
     }
 
-    // Whether a browser version runs on an OS version (requirements.tsv).
+    // Whether a browser version runs on an OS version: new enough for the OS
+    // (requirements.tsv) and no older than the one the OS ships with (bundled.tsv).
     [[nodiscard]] bool runs_on_(std::string_view browser, std::string_view os, int browser_major,
                                 const version_parts& os_version) const
     {
-        const auto it = _model.requirements.find(join_({browser, os}));
-        if (it == _model.requirements.end() || os_version.empty()) return true;
-        return std::ranges::none_of(it->second, [&](const requirement& req) {
-            return browser_major >= req.from && compare_(os_version, req.min_os) < 0;
+        if (os_version.empty()) return true;
+        const auto key = join_({browser, os});
+        if (const auto it = _model.requirements.find(key); it != _model.requirements.end())
+        {
+            const bool too_old_os = std::ranges::any_of(it->second, [&](const requirement& req) {
+                return browser_major >= req.from && compare_(os_version, req.min_os) < 0;
+            });
+            if (too_old_os) return false;
+        }
+        const auto it = _model.bundled.find(key);
+        if (it == _model.bundled.end()) return true;
+        return std::ranges::none_of(it->second, [&](const auto& b) {
+            return compare_(os_version, b.first) == 0 && browser_major < b.second;
         });
     }
 
@@ -1930,6 +1956,11 @@ class dvg
     static std::string accept_language_(std::string_view locale)
     {
         if (locale.empty()) return {};
+        const bool tag_chars = std::ranges::all_of(locale, [](char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_';
+        });
+        if (locale.size() > 35 || !tag_chars || locale.front() == '-' || locale.front() == '_')
+            throw std::invalid_argument("device-generator: the locale must be a BCP 47 tag such as pt-BR");
         std::string tag{locale};
         std::ranges::replace(tag, '_', '-');
         const auto dash = tag.find('-');

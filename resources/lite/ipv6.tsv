@@ -1,4 +1,4 @@
-# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned). See doc/data.md.
+# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned), without legacy organisation blocks and the published cloud ranges. See doc/data.md.
 country_code	prefix	length
 AD	2a01:fb00::	29
 AD	2a02:8060::	31

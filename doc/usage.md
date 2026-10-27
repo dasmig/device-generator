@@ -134,7 +134,7 @@ user-generator itself does not include device-generator yet; an opt-in `device` 
 
 ## Extending Data
 
-Each of the fifteen tables (`dasmig::device_table`) takes layers:
+Each of the sixteen tables (`dasmig::device_table`) takes layers:
 
 ```cpp
 // A new phone model.
@@ -208,6 +208,6 @@ About 9 µs a device on one thread (110,000 a second, `lite`, clang `-O2`).
 | Exception | When |
 |-----------|------|
 | `std::runtime_error` | A generation call before data is loaded |
-| `std::invalid_argument` | A reference date before 2021-01-01 or not a valid date; an unknown country or platform; a kind that contradicts the platform; a browser that does not run on the platform or the OS version by the date; a country without registered addresses and no `safe` |
+| `std::invalid_argument` | A reference date before 2021-01-01 or not a valid date; an unknown country or platform; a kind that contradicts the platform; a browser that does not run on the platform or the OS version by the date; a country without registered addresses and no `safe`; a `locale` that is not a BCP 47 tag (letters, digits, `-`, `_`) |
 | `dasmig::core::tsv_error` | A malformed table or layer (message gives file, line and column); the data is unchanged |
 | `std::invalid_argument` from `extend(path)` | A file whose name is not one of the tables |

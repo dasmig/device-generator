@@ -1,4 +1,4 @@
-# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned). See doc/data.md.
+# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned), without legacy organisation blocks and the published cloud ranges. See doc/data.md.
 country_code	prefix	length
 AD	2a01:fb00::	29
 AD	2a02:8060::	31
@@ -21192,7 +21192,6 @@ CR	2803:ee40::	32
 CR	2803:f150::	32
 CR	2803:f340::	32
 CR	2803:f600::	32
-CR	2803:f800::	32
 CR	2803:f8e0::	32
 CR	2803:fb40::	32
 CR	2803:fe40::	32
@@ -53198,7 +53197,6 @@ SC	2c0f:e838::	32
 SC	2c0f:ec00::	32
 SC	2c0f:efa0::	32
 SC	2c0f:f0d0::	32
-SC	2c0f:f248::	32
 SC	2c0f:f360::	32
 SC	2c0f:f530::	32
 SC	2c0f:f680::	32
@@ -57481,7 +57479,6 @@ US	2400:9640::	32
 US	2400:a1c0::	32
 US	2400:b920::	32
 US	2400:c401::	32
-US	2400:cb00::	32
 US	2400:db60::	32
 US	2400:eb40::	32
 US	2401:5a0::	32
@@ -57529,9 +57526,7 @@ US	2404:9480::	32
 US	2404:f6c0::	32
 US	2404:ffc0::	32
 US	2405:22c0::	32
-US	2405:8100::	32
 US	2405:b1c0::	32
-US	2405:b500::	32
 US	2405:ec40::	32
 US	2405:f9c0::	32
 US	2406:2d40::	32
@@ -62836,7 +62831,6 @@ US	2606:4600::	32
 US	2606:4640::	32
 US	2606:4680::	32
 US	2606:46c0::	32
-US	2606:4700::	32
 US	2606:4780::	32
 US	2606:47c0::	32
 US	2606:4800::	32
@@ -66367,12 +66361,10 @@ US	2620:108:3000::	44
 US	2620:108:4000::	40
 US	2620:108:5000::	44
 US	2620:108:6000::	36
-US	2620:108:7000::	44
 US	2620:108:9000::	44
 US	2620:108:a000::	44
 US	2620:108:b000::	44
 US	2620:108:c000::	40
-US	2620:108:d000::	44
 US	2620:108:e000::	44
 US	2620:108:f000::	44
 US	2620:109::	40
@@ -67389,7 +67381,6 @@ US	2a06:4100::	29
 US	2a06:80c0::	29
 US	2a06:8e40::	29
 US	2a06:8e80::	29
-US	2a06:98c0::	29
 US	2a06:9f40::	29
 US	2a06:9f80::	29
 US	2a06:a000::	29

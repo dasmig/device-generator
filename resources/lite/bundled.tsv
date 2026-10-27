@@ -1,0 +1,10 @@
+# The browser an OS version ships with: on that OS version, the browser is at least min_browser (macOS 14 ships Safari 17, so a Mac on 14 never runs Safari 16). From Apple's release notes (curated); see doc/data.md.
+os	os_version	browser	min_browser
+macOS	10.15	safari	13
+macOS	11	safari	14
+macOS	12	safari	15
+macOS	13	safari	16
+macOS	14	safari	17
+macOS	15	safari	18
+macOS	26	safari	26
+macOS	27	safari	27

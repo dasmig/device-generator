@@ -6,10 +6,10 @@ The data in `resources/` and how device-generator uses it (rule 6 of the dasmig 
 
 | Tier | Countries | IP data | Everything else |
 | --- | --- | --- | --- |
-| `lite` | 195 sovereign states (country-generator's `lite`) | the 64 largest IPv4 blocks and the 64 largest IPv6 prefixes per country: 9,302 and 7,156 rows | the same as `full` |
-| `full` | 245 inhabited territories (country-generator's `full`) | every registered block: 143,403 IPv4 blocks and 69,743 IPv6 prefixes | |
+| `lite` | 195 sovereign states (country-generator's `lite`) | the 64 largest IPv4 blocks and the 64 largest IPv6 prefixes per country: 9,301 and 7,156 rows | the same as `full` |
+| `full` | 245 inhabited territories (country-generator's `full`) | every registered block: 145,071 IPv4 blocks and 69,734 IPv6 prefixes | |
 
-`lite` is compiled in with `DASMIG_DEVICE_EMBED` (630 KB of source). The 64-block cap keeps the whole allocated IPv4 space for the median country; the most fragmented country keeps 30% of it. `full` loads in about 0.2 s.
+`lite` is compiled in with `DASMIG_DEVICE_EMBED` (631 KB of source). The 64-block cap keeps the whole allocated IPv4 space for the median country; the most fragmented country keeps 30% of it. `full` loads in about 0.2 s.
 
 ## Tables
 
@@ -77,6 +77,10 @@ Keyed by `product`, `version`, `date`: `share`. A product listed here uses these
 
 Keyed by `browser`, `os`, `from_version`: `min_os`. From that browser version on, the OS must be at least `min_os` (Chrome and Edge 110 need Windows 10; Firefox 116 needs Windows 10 and macOS 10.15; Chrome 120 needs Android 8; Safari 17 needs macOS 12). From the vendors' support notices; the Android and iOS rows are approximate.
 
+### `bundled.tsv`: the browser an OS version ships with, curated
+
+Keyed by `os`, `os_version`, `browser`: `min_browser`. On that OS version the browser is at least that major: macOS 10.15 to 15 ship Safari 13 to 18, macOS 26 and 27 ship Safari 26 and 27, so a Mac on macOS 26 never shows Safari 18. From Apple's release notes.
+
 ### `browser_shares.tsv`: browsers, curated
 
 Keyed by `country`, `os`, `browser`: `weight`. World rows per OS and country rows for South Korean Android and German Windows. Rounded from StatCounter's browser shares by platform. Samsung Internet is only drawn on Samsung devices (about a sixth of their users with the shipped weights). Opera, Yandex, UC Browser, QQ Browser and the makers' own Chinese browsers are left out, so Russia and China are the least faithful.
@@ -88,7 +92,7 @@ Keyed by `browser`, `os`, `min_browser`, `min_os`: `template`. The row used is t
 - Chrome: full versions before 101, minor zeros from 101 (user-agent reduction phase 4), `Android 10; K` from 110 (phase 6). The desktop OS tokens are the frozen ones (`Windows NT 10.0` for 10 and 11, `Intel Mac OS X 10_15_7`, `CrOS x86_64 14541.0.0`) at every version, a simplification before 2022.
 - Edge: Chrome's format with `Edg/`, `EdgA/` and `EdgiOS/` and minor zeros at every version (a simplification before 2022).
 - Samsung Internet: the model token with a `SAMSUNG` prefix before version 20, the reduced form from 20 (approximate version).
-- Safari on iOS: `Version/` is the iOS version; from iOS 26 the OS token is frozen at `18_6`. Every iOS browser has the same frozen token. iPad Safari sends the Mac desktop string.
+- Safari on iOS: `Version/` is the iOS version; from iOS 26 the OS token is frozen at `18_6`. Every iOS browser has the same frozen token. iPad Safari sends the Mac desktop string from iPadOS 13, and the iPad string before.
 - Firefox: `rv:` and `Firefox/` with the major, `Intel Mac OS X 10.15` on Macs, `FxiOS/` on iOS.
 
 ### `screens.tsv`: screens without a model, curated
@@ -97,7 +101,13 @@ Keyed by `country`, `os`, `width`, `height`, `pixel_ratio`: `weight`. Used for W
 
 ### `ipv4.tsv` and `ipv6.tsv`: registered blocks, derived
 
-Keyed by `country_code` and `start` (`size` in addresses) or `prefix` (`length`). Built by `scripts/prepare_ip.py` from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (`allocated` and `assigned` rows): IPv4 ranges of a country merged, IPv6 prefixes collapsed, and the IANA special-purpose ranges (RFC 6890 and updates) removed. The country of a block is where it is registered, which is not always where it is used (a multinational's block, a VPN).
+Keyed by `country_code` and `start` (`size` in addresses) or `prefix` (`length`). Built by `scripts/prepare_ip.py` from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (`allocated` and `assigned` rows): IPv4 ranges of a country merged, IPv6 prefixes collapsed. Left out, because people's devices do not browse from them:
+
+- the IANA special-purpose ranges (RFC 6890 and updates);
+- old organisation blocks, 369 million addresses: registry rows from before 2000 that are a `/9` or larger (the US Department of Defense's `/8`s, Apple, Ford, Daimler, the UK Ministry of Defence, AMPRNet and others) and the `/8`s IANA's IPv4 registry lists as LEGACY with an organisation as the designation;
+- the data-centre ranges Amazon Web Services, Google Cloud, Microsoft Azure (the `AzureCloud` service tag), Oracle Cloud and Cloudflare publish: cut out of the IPv4 blocks (with the special-purpose ranges, 182 million addresses); an IPv6 prefix inside one is dropped.
+
+Without them the United States has 1,134 million addresses instead of 1,606 million. Large companies' and smaller hosting providers' blocks remain, as do VPN and mobile carrier pools. The country of a block is where it is registered, which is not always where it is used (a multinational's block, a VPN).
 
 ### `reserved.tsv`: documentation ranges
 
@@ -112,7 +122,7 @@ Each step draws from its own stream split from the call seed, so a step fixed by
 3. **Maker and model** (`"model"`): a maker by the country's shares among those with a model out by the date (Samsung only, when Samsung Internet is asked for), then a model of that maker by popularity and age. Platforms without models (Windows, Linux, ChromeOS) have a maker and no model.
 4. **OS version** (`"os-version"`, `"os-minor"`): among the versions released by the date that the model runs, by `version_shares.tsv` or the adoption curve. iOS and iPadOS add a minor version: the newest one out by the date (about one every 45 days, up to the last known), or one to a few older with falling chance.
 5. **Browser** (`"browser"`): by the OS's shares in the country, among browsers with a version that runs on that OS version by the date.
-6. **Browser version** (`"browser-version"`): among the versions released by the date that run on the OS, by the adoption curve. Safari on iOS is the iOS version; Safari on macOS adds a minor version like iOS.
+6. **Browser version** (`"browser-version"`): among the versions released by the date that run on the OS and are no older than the one it ships with, by the adoption curve. Safari on iOS is the iOS version; Safari on macOS adds a minor version like iOS.
 7. **User agent**: rendered from the template; `Accept-Language` from the requested locale (`pt-BR,pt;q=0.9,en;q=0.8`).
 8. **Screen** (`"screen"`): the model's, else by `screens.tsv`.
 9. **IP** (`"ip-version"`, `"ip"`): IPv6 with the country's IPv6 share (or as requested), then a block by size and an address inside it, avoiding `.0` and `.255` in IPv4; IPv6 keeps the prefix and draws the rest. `safe` draws from `reserved.tsv` instead.

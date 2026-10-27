@@ -36,7 +36,7 @@ Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome
 
 - **Identical Everywhere**. A seed gives the same result on every compiler, standard library and CPU (GCC, Clang, MSVC, Emscripten; x86-64 and ARM64), checked by known-answer tests.
 
-- **Extensible Data**. Fifteen TSV tables (models, releases, shares, user-agent templates, IP blocks, ...) that you can extend with layers (`extend()`), checked before they are applied.
+- **Extensible Data**. Sixteen TSV tables (models, releases, shares, user-agent templates, IP blocks, ...) that you can extend with layers (`extend()`), checked before they are applied.
 
 - **JSON and Replay**. `to_json()` on every result, and a `signature()` recording the seed and the data it came from.
 

@@ -258,6 +258,19 @@ TEST_CASE("invalid requests are rejected", "[errors]")
     REQUIRE_THROWS_AS(gen.get_device(r, 1), std::invalid_argument);
 }
 
+TEST_CASE("a locale that is not a language tag is rejected", "[errors]")
+{
+    const auto gen = make_loaded_generator();
+    dasmig::device_request r;
+    for (const auto* bad : {"pt-BR\r\nX-Injected: 1", "en US", "-en", "pt;q=1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
+    {
+        r.locale = bad;
+        REQUIRE_THROWS_AS(gen.get_device(r, 1), std::invalid_argument);
+    }
+    r.locale = "zh-Hant-TW";
+    REQUIRE(gen.get_device(r, 1).accept_language == "zh-Hant-TW,zh;q=0.9,en;q=0.8");
+}
+
 TEST_CASE("a country without registered addresses needs safe", "[errors][ip]")
 {
     const auto gen = make_loaded_generator();
@@ -434,6 +447,49 @@ TEST_CASE("old systems keep the last browser versions they run", "[coherence]")
     REQUIRE(seven > 0);
 }
 
+TEST_CASE("Safari on a Mac is at least the version macOS ships with", "[coherence]")
+{
+    const auto gen = make_loaded_generator();
+    const std::map<std::string, int> shipped{{"10.15", 13}, {"11", 14}, {"12", 15}, {"13", 16},
+                                             {"14", 17},    {"15", 18}, {"26", 26}, {"27", 27}};
+    dasmig::device_request r = at(year{2026} / 10 / 1);
+    r.platform = "macos-desktop";
+    r.browser = "safari";
+    int checked = 0;
+    for (std::uint64_t s = 0; s < 3000; ++s)
+    {
+        const auto d = gen.get_device(r, s);
+        const auto it = shipped.find(d.os_version);
+        if (it == shipped.end()) continue;
+        ++checked;
+        REQUIRE(major_of(d.browser_version) >= it->second);
+    }
+    REQUIRE(checked > 2500);
+}
+
+TEST_CASE("iPads ask for the desktop site from iPadOS 13", "[coherence]")
+{
+    const auto gen = make_loaded_generator();
+    dasmig::device_request r = at(year{2021} / 1 / 1);
+    r.platform = "ipad";
+    r.browser = "safari";
+    int before_13 = 0;
+    for (std::uint64_t s = 0; s < 3000; ++s)
+    {
+        const auto d = gen.get_device(r, s);
+        if (major_of(d.os_version) < 13)
+        {
+            ++before_13;
+            REQUIRE(d.user_agent.starts_with("Mozilla/5.0 (iPad; CPU OS 12_"));
+        }
+        else
+        {
+            REQUIRE(d.user_agent.starts_with("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"));
+        }
+    }
+    REQUIRE(before_13 > 0);
+}
+
 TEST_CASE("models only run OS versions they support", "[coherence]")
 {
     const auto gen = make_loaded_generator();
@@ -532,6 +588,22 @@ TEST_CASE("safe devices get documentation addresses only", "[request][ip]")
 
     r.ip = dasmig::ip_version::v6;
     REQUIRE(gen.get_device(r, 5).ip.starts_with("2001:db8:"));
+}
+
+TEST_CASE("old organisation blocks are not in the address data", "[ip]")
+{
+    // Defense, Apple, Ford, Daimler, UK Ministry of Defence, AMPRNet and other pre-2000 /8s.
+    const std::set<int> organisation{6, 7, 11, 17, 19, 21, 22, 25, 26, 28, 29, 30, 33, 38, 53, 55, 214, 215};
+    for (const auto& [country, blocks] : ref().ipv4)
+    {
+        for (const auto& [start, size] : blocks)
+        {
+            INFO(country << " " << (start >> 24U));
+            REQUIRE_FALSE(organisation.contains(static_cast<int>(start >> 24U)));
+            REQUIRE(start >> 24U != 10U);  // private
+            REQUIRE(start >> 28U < 14U);   // below multicast
+        }
+    }
 }
 
 TEST_CASE("addresses are well formed and avoid .0 and .255", "[ip]")
@@ -678,20 +750,20 @@ TEST_CASE("known answers for fixed seeds", "[kat]")
     dasmig::dvg gen;
     gen.load(lite_dir());
     REQUIRE(gen.has_data());
-    REQUIRE(gen.data_hash() == 0xcff5c8af9ea044c1ULL);
+    REQUIRE(gen.data_hash() == 0xe3458dfd171ee57aULL);
 
     REQUIRE(gen.get_device({}, std::uint64_t{1}).to_json() ==
-            R"({"country_code":"DE","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 11","os":"iOS","os_version":"16.5","browser":"safari","browser_version":"16.5","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1","accept_language":"","screen":{"width":414,"height":896,"pixel_ratio":2},"ip":"53.114.66.38","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000001","data":"cff5c8af9ea044c1"}})");
+            R"({"country_code":"DE","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 11","os":"iOS","os_version":"16.5","browser":"safari","browser_version":"16.5","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1","accept_language":"","screen":{"width":414,"height":896,"pixel_ratio":2},"ip":"77.7.36.34","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000001","data":"e3458dfd171ee57a"}})");
     dasmig::device_request r = at(year{2026} / 10 / 1);
     r.platform = "ios-phone";
     r.locale = "pt-BR";
     REQUIRE(gen.get_device(r, std::uint64_t{7}).to_json() ==
-            R"({"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"26.7","browser":"safari","browser_version":"26.7","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.7 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"cff5c8af9ea044c1"}})");
+            R"({"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"26.7","browser":"safari","browser_version":"26.7","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.7 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"e3458dfd171ee57a"}})");
     r = at(year{2021} / 6 / 1);
     r.platform = "windows-desktop";
     r.safe = true;
     REQUIRE(gen.get_device(r, std::uint64_t{3}).to_json() ==
-            R"({"country_code":"IN","platform":"windows-desktop","platform_label":"Windows PC","kind":"desktop","maker":"HP","model":"","os":"Windows","os_version":"10","browser":"chrome","browser_version":"91","engine":"Blink","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36","accept_language":"","screen":{"width":1707,"height":960,"pixel_ratio":1.5},"ip":"2001:db8:179:a0f2:ada2:1e3d:d4bf:77a","ip_version":6,"reserved":true,"signature":{"seed":"0000000000000003","data":"cff5c8af9ea044c1"}})");
+            R"({"country_code":"IN","platform":"windows-desktop","platform_label":"Windows PC","kind":"desktop","maker":"HP","model":"","os":"Windows","os_version":"10","browser":"chrome","browser_version":"91","engine":"Blink","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36","accept_language":"","screen":{"width":1707,"height":960,"pixel_ratio":1.5},"ip":"2001:db8:179:a0f2:ada2:1e3d:d4bf:77a","ip_version":6,"reserved":true,"signature":{"seed":"0000000000000003","data":"e3458dfd171ee57a"}})");
 
     std::uint64_t h = 0xcbf29ce484222325ULL;
     for (std::uint64_t s = 0; s < 10000; ++s)
@@ -702,7 +774,7 @@ TEST_CASE("known answers for fixed seeds", "[kat]")
             h *= 0x100000001b3ULL;
         }
     }
-    REQUIRE(h == 0xe6481a46dcd2cee1ULL);
+    REQUIRE(h == 0xd6effa69b539ccb3ULL);
 }
 
 // ---------------------------------------------------------------------------
@@ -871,5 +943,5 @@ TEST_CASE("device batch: known answer of 10,000 items", "[batch][kat]")
     gen.for_each_device({}, {.count = 10000, .threads = 4}, 1, [&](std::uint64_t, const dasmig::device& item) {
         hash = dasmig::core::hash_combine(hash, dasmig::core::fnv1a64(item.to_json()));
     });
-    REQUIRE(hash == 0x7951b01e9ef864e9ULL);
+    REQUIRE(hash == 0x2ca5b55a3dc46630ULL);
 }

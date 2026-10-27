@@ -69,8 +69,24 @@ inline constexpr std::array<std::string_view, 1> file_1{
         , 781},
 };
 
-// lite/countries.tsv
+// lite/bundled.tsv
 inline constexpr std::array<std::string_view, 1> file_2{
+    std::string_view{
+        "# The browser an OS version ships with: on that OS version, the browser is at least min_browser (macOS 14 ships Safari 17, so a Mac on 14 never runs Safari 16). From Apple's release notes (curated); see doc/data.md.\n"
+        "os\tos_version\tbrowser\tmin_browser\n"
+        "macOS\t10.15\tsafari\t13\n"
+        "macOS\t11\tsafari\t14\n"
+        "macOS\t12\tsafari\t15\n"
+        "macOS\t13\tsafari\t16\n"
+        "macOS\t14\tsafari\t17\n"
+        "macOS\t15\tsafari\t18\n"
+        "macOS\t26\tsafari\t26\n"
+        "macOS\t27\tsafari\t27\n"
+        , 405},
+};
+
+// lite/countries.tsv
+inline constexpr std::array<std::string_view, 1> file_3{
     std::string_view{
         "# Who is online in each country. Built by scripts/prepare_countries.py from country-generator (population), the World Bank (IT.NET.USER.ZS) and APNIC Labs (IPv6 preferred). See doc/data.md.\n"
         "country_code\tpopulation\tinternet_share\tipv6_share\n"
@@ -273,9 +289,9 @@ inline constexpr std::array<std::string_view, 1> file_2{
 };
 
 // lite/ipv4.tsv
-inline constexpr std::array<std::string_view, 13> file_3{
+inline constexpr std::array<std::string_view, 13> file_4{
     std::string_view{
-        "# IPv4 blocks registered to each country, merged. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned). See doc/data.md.\n"
+        "# IPv4 blocks registered to each country, merged. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned), without legacy organisation blocks and the published cloud ranges. See doc/data.md.\n"
         "country_code\tstart\tsize\n"
         "AD\t2.152.216.0\t2048\n"
         "AD\t46.172.224.0\t8192\n"
@@ -1034,11 +1050,11 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "BD\t103.132.216.0\t3072\n"
         "BD\t112.137.0.0\t4096\n"
         "BD\t113.11.0.0\t32768\n"
+        , 15997},
+    std::string_view{
         "BD\t114.31.0.0\t8192\n"
         "BD\t114.130.0.0\t65536\n"
         "BD\t115.127.0.0\t57344\n"
-        , 15991},
-    std::string_view{
         "BD\t116.68.192.0\t4096\n"
         "BD\t118.67.208.0\t4096\n"
         "BD\t118.179.0.0\t57344\n"
@@ -1511,7 +1527,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "BR\t191.134.0.0\t655360\n"
         "BR\t191.160.0.0\t393216\n"
         "BR\t191.167.0.0\t2949120\n"
-        "BR\t191.224.0.0\t1129984\n"
+        "BR\t191.224.0.0\t528384\n"
         "BR\t191.241.144.0\t946176\n"
         "BR\t200.128.0.0\t659456\n"
         "BR\t200.142.240.0\t442368\n"
@@ -1804,11 +1820,11 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CA\t142.0.240.0\t200704\n"
         "CA\t142.5.0.0\t393216\n"
         "CA\t142.12.0.0\t2099200\n"
+        , 15989},
+    std::string_view{
         "CA\t142.44.128.0\t622592\n"
         "CA\t142.57.0.0\t196608\n"
         "CA\t142.61.0.0\t262144\n"
-        , 15994},
-    std::string_view{
         "CA\t142.66.0.0\t262144\n"
         "CA\t142.71.0.0\t393216\n"
         "CA\t142.80.0.0\t393216\n"
@@ -2184,7 +2200,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CN\t14.103.0.0\t1638400\n"
         "CN\t27.8.0.0\t1572864\n"
         "CN\t27.184.0.0\t2883584\n"
-        "CN\t36.96.0.0\t8388608\n"
+        "CN\t36.103.232.192\t7870272\n"
         "CN\t39.64.0.0\t2949120\n"
         "CN\t39.128.0.0\t4194304\n"
         "CN\t42.156.36.0\t2054144\n"
@@ -2201,7 +2217,8 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CN\t106.11.0.0\t2621440\n"
         "CN\t110.94.0.0\t2228224\n"
         "CN\t110.176.0.0\t3145728\n"
-        "CN\t110.240.0.0\t5242880\n"
+        "CN\t110.240.0.0\t1944448\n"
+        "CN\t111.13.185.96\t3294880\n"
         "CN\t111.126.0.0\t2752512\n"
         "CN\t111.192.0.0\t1572864\n"
         "CN\t112.0.0.0\t4456448\n"
@@ -2212,11 +2229,11 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CN\t114.80.0.0\t1835008\n"
         "CN\t114.208.0.0\t3145728\n"
         "CN\t115.190.0.0\t3276800\n"
-        "CN\t116.128.0.0\t4259840\n"
+        "CN\t116.129.226.192\t4136256\n"
         "CN\t117.21.0.0\t1638400\n"
         "CN\t117.135.0.0\t3735552\n"
-        "CN\t119.112.0.0\t2359296\n"
-        "CN\t120.192.0.0\t4194304\n"
+        "CN\t119.112.0.0\t2340352\n"
+        "CN\t120.192.0.0\t2681856\n"
         "CN\t121.8.0.0\t2359296\n"
         "CN\t122.64.0.0\t2228224\n"
         "CN\t122.224.0.0\t1572864\n"
@@ -2229,7 +2246,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CN\t175.0.0.0\t1835008\n"
         "CN\t175.46.0.0\t3276800\n"
         "CN\t180.95.128.0\t2129920\n"
-        "CN\t180.152.0.0\t1572864\n"
         "CN\t182.96.0.0\t3670016\n"
         "CN\t183.0.0.0\t4718592\n"
         "CN\t183.128.0.0\t2818048\n"
@@ -2321,7 +2337,8 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CR\t45.227.200.0\t1024\n"
         "CR\t45.231.52.0\t1024\n"
         "CR\t45.232.116.0\t1024\n"
-        "CR\t144.22.0.0\t131072\n"
+        "CR\t144.22.0.0\t8192\n"
+        "CR\t144.23.0.0\t65536\n"
         "CR\t152.231.128.0\t32768\n"
         "CR\t163.178.0.0\t65536\n"
         "CR\t177.93.0.0\t8192\n"
@@ -2351,7 +2368,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "CR\t190.10.0.0\t32768\n"
         "CR\t190.57.48.0\t2048\n"
         "CR\t190.93.160.0\t4096\n"
-        "CR\t190.93.240.0\t4096\n"
         "CR\t190.99.120.0\t2048\n"
         "CR\t190.113.80.0\t2048\n"
         "CR\t190.113.96.0\t8192\n"
@@ -2551,7 +2567,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "DE\t37.80.0.0\t1048576\n"
         "DE\t46.78.0.0\t1179648\n"
         "DE\t47.64.0.0\t524288\n"
-        "DE\t53.0.0.0\t16777216\n"
         "DE\t62.52.0.0\t262144\n"
         "DE\t62.153.0.0\t458752\n"
         "DE\t62.224.0.0\t262144\n"
@@ -2569,11 +2584,11 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "DE\t88.64.0.0\t1048576\n"
         "DE\t89.12.0.0\t262144\n"
         "DE\t89.244.0.0\t262144\n"
+        , 15982},
+    std::string_view{
         "DE\t91.0.0.0\t4456448\n"
         "DE\t91.96.0.0\t262144\n"
         "DE\t92.72.0.0\t524288\n"
-        , 15990},
-    std::string_view{
         "DE\t92.195.0.0\t327680\n"
         "DE\t92.208.0.0\t786432\n"
         "DE\t92.224.0.0\t524288\n"
@@ -2602,6 +2617,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "DE\t178.24.0.0\t262144\n"
         "DE\t178.200.0.0\t262144\n"
         "DE\t188.96.0.0\t1048576\n"
+        "DE\t188.192.0.0\t262144\n"
         "DE\t195.124.0.0\t263168\n"
         "DE\t217.0.0.0\t524288\n"
         "DE\t217.80.0.0\t1048576\n"
@@ -3265,29 +3281,22 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "GB\t2.120.0.0\t524288\n"
         "GB\t2.216.0.0\t524288\n"
         "GB\t5.64.0.0\t524288\n"
-        "GB\t9.129.0.0\t327680\n"
-        "GB\t9.157.0.0\t262144\n"
+        "GB\t9.130.0.0\t262144\n"
         "GB\t13.240.0.0\t262144\n"
-        "GB\t25.0.0.0\t16777216\n"
         "GB\t31.48.0.0\t524288\n"
         "GB\t31.71.0.0\t327680\n"
         "GB\t31.78.0.0\t655360\n"
         "GB\t31.90.0.0\t458752\n"
         "GB\t31.99.216.0\t337920\n"
         "GB\t31.106.0.0\t1441792\n"
-        "GB\t48.160.0.0\t6291456\n"
-        "GB\t51.9.0.0\t393216\n"
-        "GB\t51.51.0.0\t589824\n"
+        "GB\t48.160.0.0\t2097152\n"
+        "GB\t48.224.0.0\t2097152\n"
         "GB\t51.61.0.0\t458752\n"
-        "GB\t51.103.0.0\t327680\n"
-        "GB\t51.135.0.0\t262144\n"
-        "GB\t51.140.0.0\t655360\n"
+        "GB\t51.146.0.0\t262144\n"
         "GB\t57.16.0.0\t262144\n"
         "GB\t57.41.0.0\t393216\n"
-        "GB\t57.150.0.0\t1703936\n"
         "GB\t62.252.0.0\t262144\n"
         "GB\t68.240.0.0\t524288\n"
-        "GB\t74.144.0.0\t1048576\n"
         "GB\t77.96.0.0\t524288\n"
         "GB\t78.143.240.0\t528384\n"
         "GB\t80.0.0.0\t524288\n"
@@ -3313,17 +3322,24 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "GB\t107.32.0.0\t2097152\n"
         "GB\t109.144.0.0\t1048576\n"
         "GB\t135.3.0.0\t327680\n"
-        "GB\t135.114.0.0\t524288\n"
-        "GB\t135.224.0.0\t1179648\n"
-        "GB\t145.176.0.0\t1048576\n"
+        "GB\t135.226.0.0\t393216\n"
+        "GB\t135.238.0.0\t262144\n"
+        "GB\t145.176.0.0\t917504\n"
         "GB\t147.147.0.0\t393216\n"
         "GB\t149.181.128.0\t294912\n"
         "GB\t149.191.0.0\t393216\n"
         "GB\t151.224.0.0\t524288\n"
-        "GB\t172.128.0.0\t5767168\n"
+        "GB\t176.24.0.0\t262144\n"
         "GB\t176.248.0.0\t524288\n"
+        "GB\t188.28.0.0\t262144\n"
+        "GB\t188.220.0.0\t262144\n"
+        "GB\t193.60.0.0\t262144\n"
         "GB\t193.128.8.0\t391168\n"
+        "GB\t194.72.0.0\t262144\n"
+        "GB\t194.80.0.0\t262144\n"
         "GB\t194.127.255.0\t262400\n"
+        "GB\t194.200.0.0\t262144\n"
+        "GB\t195.104.0.0\t262144\n"
         "GB\t217.32.0.0\t1048576\n"
         "GD\t23.128.4.0\t256\n"
         "GD\t23.130.168.0\t256\n"
@@ -3338,12 +3354,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "GD\t162.245.152.0\t1024\n"
         "GD\t196.3.73.0\t256\n"
         "GD\t199.83.192.0\t2048\n"
+        , 15983},
+    std::string_view{
         "GD\t199.85.236.0\t1024\n"
         "GD\t206.126.244.0\t256\n"
         "GE\t5.152.0.0\t32768\n"
         "GE\t5.178.128.0\t32768\n"
-        , 15981},
-    std::string_view{
         "GE\t31.146.0.0\t65536\n"
         "GE\t31.192.0.0\t16384\n"
         "GE\t37.110.160.0\t8192\n"
@@ -3952,8 +3968,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "ID\t223.164.0.0\t65536\n"
         "IE\t31.88.0.0\t131072\n"
         "IE\t46.7.0.0\t65536\n"
-        "IE\t46.51.128.0\t32768\n"
-        "IE\t46.137.0.0\t65536\n"
         "IE\t51.37.0.0\t65536\n"
         "IE\t51.171.0.0\t65536\n"
         "IE\t57.7.0.0\t65536\n"
@@ -3980,7 +3994,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "IE\t78.16.0.0\t65536\n"
         "IE\t78.135.128.0\t32768\n"
         "IE\t79.97.0.0\t65536\n"
-        "IE\t79.125.0.0\t32768\n"
         "IE\t80.233.0.0\t32768\n"
         "IE\t83.70.0.0\t131072\n"
         "IE\t83.210.0.0\t65536\n"
@@ -4008,7 +4021,10 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "IE\t159.134.0.0\t65536\n"
         "IE\t160.6.0.0\t65536\n"
         "IE\t163.70.128.0\t32768\n"
-        "IE\t176.34.0.0\t65536\n"
+        "IE\t163.77.128.0\t32768\n"
+        "IE\t168.168.0.0\t32768\n"
+        "IE\t176.61.0.0\t32768\n"
+        "IE\t178.167.128.0\t32768\n"
         "IE\t193.1.0.0\t65536\n"
         "IE\t193.120.0.0\t65536\n"
         "IE\t194.125.0.0\t57344\n"
@@ -4111,12 +4127,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "IN\t115.96.0.0\t262144\n"
         "IN\t115.108.0.0\t786432\n"
         "IN\t115.184.0.0\t131072\n"
+        , 15988},
+    std::string_view{
         "IN\t115.240.0.0\t1048576\n"
         "IN\t116.72.0.0\t262144\n"
         "IN\t117.96.0.0\t262144\n"
         "IN\t117.192.0.0\t4194304\n"
-        , 15989},
-    std::string_view{
         "IN\t118.94.0.0\t131072\n"
         "IN\t119.226.0.0\t131072\n"
         "IN\t120.56.0.0\t524288\n"
@@ -4546,6 +4562,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "JP\t124.32.0.0\t552960\n"
         "JP\t124.96.0.0\t524288\n"
         "JP\t124.208.0.0\t524288\n"
+        "JP\t125.8.0.0\t524288\n"
         "JP\t125.48.0.0\t557056\n"
         "JP\t125.192.0.0\t1048576\n"
         "JP\t126.0.0.0\t3440640\n"
@@ -4554,7 +4571,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "JP\t126.211.0.0\t983040\n"
         "JP\t126.232.0.0\t655360\n"
         "JP\t126.244.0.0\t786432\n"
-        "JP\t133.0.0.0\t16777216\n"
         "JP\t150.9.224.0\t1992704\n"
         "JP\t150.48.192.0\t3035136\n"
         "JP\t153.124.168.0\t8607744\n"
@@ -4879,12 +4895,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "KW\t37.231.0.0\t65536\n"
         "KW\t45.15.228.0\t1024\n"
         "KW\t45.66.0.0\t1024\n"
+        , 15999},
+    std::string_view{
         "KW\t45.130.36.0\t1024\n"
         "KW\t45.158.96.0\t1024\n"
         "KW\t46.186.128.0\t32768\n"
         "KW\t62.150.0.0\t65536\n"
-        , 15995},
-    std::string_view{
         "KW\t62.215.0.0\t65536\n"
         "KW\t78.89.0.0\t65536\n"
         "KW\t78.154.192.0\t16384\n"
@@ -5653,12 +5669,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "MC\t188.191.136.0\t2048\n"
         "MC\t193.34.228.0\t512\n"
         "MC\t193.35.2.0\t512\n"
+        , 15986},
+    std::string_view{
         "MC\t193.39.113.0\t256\n"
         "MC\t193.105.15.0\t256\n"
         "MC\t193.218.123.0\t256\n"
         "MC\t195.20.192.0\t512\n"
-        , 15985},
-    std::string_view{
         "MC\t195.78.0.0\t8192\n"
         "MC\t213.133.72.0\t2048\n"
         "MC\t213.193.238.0\t512\n"
@@ -6427,12 +6443,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "MZ\t105.235.216.0\t2048\n"
         "MZ\t160.19.190.0\t512\n"
         "MZ\t160.119.112.0\t2048\n"
+        , 15983},
+    std::string_view{
         "MZ\t160.119.156.0\t1024\n"
         "MZ\t165.90.64.0\t8192\n"
         "MZ\t169.239.104.0\t1024\n"
         "MZ\t169.255.132.0\t1024\n"
-        , 15988},
-    std::string_view{
         "MZ\t195.140.248.0\t1024\n"
         "MZ\t196.3.96.0\t2048\n"
         "MZ\t196.10.148.0\t256\n"
@@ -7200,12 +7216,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "PH\t210.213.64.0\t49152\n"
         "PH\t222.126.0.0\t32768\n"
         "PH\t222.127.0.0\t65536\n"
+        , 15986},
+    std::string_view{
         "PK\t14.192.128.0\t8192\n"
         "PK\t37.111.128.0\t16384\n"
         "PK\t39.32.0.0\t2097152\n"
         "PK\t58.27.128.0\t32768\n"
-        , 15985},
-    std::string_view{
         "PK\t58.65.128.0\t24576\n"
         "PK\t58.181.96.0\t8192\n"
         "PK\t59.103.0.0\t65536\n"
@@ -7917,9 +7933,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "SE\t37.196.0.0\t262144\n"
         "SE\t37.250.0.0\t65536\n"
         "SE\t46.194.0.0\t131072\n"
-        "SE\t51.170.0.0\t65536\n"
         "SE\t62.20.0.0\t65536\n"
-        "SE\t62.115.0.0\t65536\n"
         "SE\t62.119.0.0\t65536\n"
         "SE\t62.127.0.0\t65536\n"
         "SE\t62.247.0.0\t65536\n"
@@ -7928,30 +7942,32 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "SE\t78.64.0.0\t1048576\n"
         "SE\t78.82.0.0\t65536\n"
         "SE\t79.64.0.0\t131072\n"
-        "SE\t79.72.0.0\t65536\n"
-        "SE\t79.76.0.0\t65536\n"
+        "SE\t79.102.0.0\t65536\n"
+        "SE\t79.138.0.0\t65536\n"
+        "SE\t80.170.0.0\t65536\n"
         "SE\t80.216.0.0\t131072\n"
         "SE\t81.224.0.0\t1048576\n"
         "SE\t82.182.0.0\t131072\n"
         "SE\t83.176.0.0\t1048576\n"
         "SE\t83.226.0.0\t131072\n"
         "SE\t83.248.0.0\t524288\n"
-        "SE\t84.12.0.0\t131072\n"
+        "SE\t84.12.0.0\t81920\n"
         "SE\t84.216.0.0\t262144\n"
         "SE\t85.224.0.0\t524288\n"
         "SE\t88.144.0.0\t131072\n"
         "SE\t90.128.0.0\t1114112\n"
         "SE\t90.224.0.0\t1048576\n"
         "SE\t91.128.0.0\t262144\n"
-        "SE\t92.0.0.0\t524288\n"
+        "SE\t92.0.0.0\t278528\n"
+        "SE\t92.6.0.0\t131072\n"
         "SE\t92.32.0.0\t262144\n"
         "SE\t95.192.0.0\t1048576\n"
         "SE\t109.56.0.0\t262144\n"
         "SE\t130.235.0.0\t655360\n"
         "SE\t131.115.0.0\t131072\n"
         "SE\t137.60.0.0\t131072\n"
-        "SE\t140.84.0.0\t196608\n"
-        "SE\t144.20.0.0\t131072\n"
+        "SE\t140.84.192.0\t81920\n"
+        "SE\t144.20.0.0\t73728\n"
         "SE\t147.13.0.0\t131072\n"
         "SE\t164.9.0.0\t131072\n"
         "SE\t176.68.0.0\t262144\n"
@@ -7975,12 +7991,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "SG\t8.128.0.0\t4194304\n"
         "SG\t8.208.0.0\t1048576\n"
         "SG\t14.100.0.0\t65536\n"
+        , 15998},
+    std::string_view{
         "SG\t27.104.0.0\t65536\n"
         "SG\t42.60.0.0\t131072\n"
-        "SG\t43.0.0.0\t8912896\n"
+        "SG\t43.128.0.0\t524288\n"
         "SG\t43.146.0.0\t131072\n"
-        , 15994},
-    std::string_view{
         "SG\t43.152.0.0\t1572864\n"
         "SG\t49.245.0.0\t65536\n"
         "SG\t58.182.0.0\t65536\n"
@@ -8012,7 +8028,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "SG\t128.106.0.0\t65536\n"
         "SG\t129.126.0.0\t65536\n"
         "SG\t129.226.0.0\t131072\n"
-        "SG\t135.149.0.0\t65536\n"
         "SG\t137.132.0.0\t65536\n"
         "SG\t138.75.0.0\t65536\n"
         "SG\t138.239.0.0\t65536\n"
@@ -8030,6 +8045,7 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "SG\t153.20.0.0\t65536\n"
         "SG\t155.62.0.0\t65536\n"
         "SG\t155.69.0.0\t65536\n"
+        "SG\t156.59.0.0\t65536\n"
         "SG\t171.0.0.0\t131072\n"
         "SG\t178.96.0.0\t131072\n"
         "SG\t178.100.0.0\t262144\n"
@@ -8750,12 +8766,12 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "TO\t202.43.8.0\t2048\n"
         "TO\t202.134.24.0\t2048\n"
         "TR\t5.24.0.0\t262144\n"
+        , 15998},
+    std::string_view{
         "TR\t5.46.0.0\t131072\n"
         "TR\t5.176.0.0\t131072\n"
         "TR\t5.229.0.0\t65536\n"
         "TR\t24.133.0.0\t65536\n"
-        , 15995},
-    std::string_view{
         "TR\t31.140.0.0\t262144\n"
         "TR\t31.145.0.0\t65536\n"
         "TR\t31.155.0.0\t65536\n"
@@ -9058,70 +9074,70 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "UG\t197.239.0.0\t16384\n"
         "UG\t212.88.96.0\t8192\n"
         "UG\t216.104.192.0\t4096\n"
-        "US\t3.0.0.0\t33554432\n"
-        "US\t6.0.0.0\t41943040\n"
-        "US\t8.224.0.0\t10551296\n"
-        "US\t11.0.0.0\t41222144\n"
-        "US\t13.142.0.0\t6422528\n"
-        "US\t15.0.0.0\t12779520\n"
-        "US\t15.236.0.0\t119799808\n"
-        "US\t26.0.0.0\t16777216\n"
-        "US\t28.0.0.0\t50331648\n"
-        "US\t32.0.0.0\t67108864\n"
-        "US\t38.0.0.0\t16777216\n"
-        "US\t44.0.0.0\t16908288\n"
-        "US\t47.128.0.0\t7798784\n"
+        "US\t8.35.200.0\t6043648\n"
+        "US\t8.238.0.0\t9633792\n"
+        "US\t15.0.0.0\t6750208\n"
+        "US\t16.214.60.0\t2737152\n"
+        "US\t23.29.224.0\t3358720\n"
+        "US\t24.158.0.0\t2752512\n"
+        "US\t32.128.0.0\t3670016\n"
+        "US\t44.128.0.0\t4194304\n"
+        "US\t47.132.0.0\t7536640\n"
         "US\t47.248.0.0\t11010048\n"
         "US\t50.120.0.0\t8912896\n"
-        "US\t52.0.0.0\t5242880\n"
-        "US\t52.144.96.0\t7315456\n"
-        "US\t54.40.0.0\t4194304\n"
-        "US\t54.140.0.0\t5373952\n"
-        "US\t54.224.0.0\t35651584\n"
-        "US\t63.0.0.0\t8646656\n"
-        "US\t63.143.128.0\t4751360\n"
-        "US\t65.111.160.0\t4554752\n"
+        "US\t56.188.0.0\t2621440\n"
+        "US\t63.36.0.0\t6287360\n"
+        "US\t65.111.160.0\t4218880\n"
         "US\t65.183.16.0\t4665344\n"
         "US\t67.72.0.0\t5648896\n"
         "US\t67.231.224.0\t5827584\n"
         "US\t68.79.64.0\t4243456\n"
-        "US\t69.94.128.0\t4030464\n"
-        "US\t70.84.0.0\t11763712\n"
+        "US\t69.107.13.144\t3207792\n"
+        "US\t69.235.192.0\t2899968\n"
+        "US\t70.84.0.0\t3145728\n"
+        "US\t70.158.0.0\t4374528\n"
         "US\t71.20.0.0\t7323648\n"
-        "US\t71.137.64.0\t7798784\n"
+        "US\t71.152.128.0\t6799360\n"
         "US\t72.64.0.0\t4718592\n"
-        "US\t72.172.176.0\t5054464\n"
+        "US\t72.172.176.0\t4542464\n"
         "US\t73.0.0.0\t17006592\n"
-        "US\t74.222.96.0\t8658944\n"
         "US\t75.160.0.0\t6823936\n"
-        "US\t76.77.96.0\t5728256\n"
-        "US\t76.164.220.0\t5972992\n"
+        "US\t76.14.0.0\t3276800\n"
+        "US\t76.77.96.0\t5545984\n"
+        "US\t76.164.220.0\t3810304\n"
         "US\t96.63.176.0\t4050944\n"
         "US\t96.128.0.0\t12587008\n"
-        "US\t97.112.0.0\t15769600\n"
-        "US\t98.160.0.0\t18874368\n"
+        "US\t97.112.0.0\t13631488\n"
+        "US\t98.160.0.0\t6946816\n"
+        "US\t99.10.64.0\t4374528\n"
+        "US\t99.87.36.0\t4119552\n"
         "US\t100.128.0.0\t8388608\n"
-        "US\t104.37.244.0\t5905408\n"
+        "US\t104.48.0.0\t5246976\n"
         "US\t107.64.0.0\t5652480\n"
         "US\t107.191.224.0\t8085504\n"
-        "US\t108.64.0.0\t6295552\n"
+        "US\t108.64.0.0\t4194304\n"
         "US\t108.182.0.0\t4849664\n"
         "US\t131.2.0.0\t4587520\n"
         "US\t132.0.0.0\t4194304\n"
-        "US\t132.79.0.0\t4390912\n"
+        "US\t132.79.0.0\t4325504\n"
         "US\t135.24.0.0\t3936256\n"
-        "US\t136.22.64.0\t7949312\n"
+        "US\t136.23.128.0\t2654208\n"
+        "US\t138.135.0.0\t3276800\n"
         "US\t140.1.0.0\t4849664\n"
+        "US\t148.8.0.0\t2818048\n"
+        "US\t162.160.0.0\t3147776\n"
+        "US\t164.216.0.0\t2621440\n"
         "US\t166.126.0.0\t5505024\n"
-        "US\t168.1.0.0\t4521984\n"
+        "US\t168.1.0.0\t3932160\n"
         "US\t169.59.0.0\t4524032\n"
         "US\t171.128.0.0\t5177344\n"
-        "US\t173.46.32.0\t8511488\n"
+        "US\t173.46.32.0\t2465792\n"
+        "US\t173.83.239.0\t6033664\n"
+        "US\t174.36.0.0\t3407872\n"
         "US\t174.143.0.0\t7405568\n"
-        "US\t184.175.64.0\t5292032\n"
-        "US\t204.245.0.0\t9383168\n"
+        "US\t204.246.192.0\t9268480\n"
+        "US\t207.254.144.0\t2584576\n"
         "US\t208.182.0.0\t5177344\n"
-        "US\t214.0.0.0\t33996800\n"
         "UY\t45.6.248.0\t2048\n"
         "UY\t45.228.64.0\t512\n"
         "UY\t69.164.80.0\t256\n"
@@ -9153,7 +9169,6 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "UY\t190.112.192.0\t1024\n"
         "UY\t190.112.200.0\t1024\n"
         "UY\t190.132.0.0\t262144\n"
-        "UY\t191.166.0.0\t65536\n"
         "UY\t192.146.237.0\t256\n"
         "UY\t200.0.68.0\t512\n"
         "UY\t200.0.86.0\t768\n"
@@ -9464,10 +9479,8 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "ZA\t41.192.0.0\t262144\n"
         "ZA\t41.246.0.0\t131072\n"
         "ZA\t102.32.0.0\t131072\n"
-        "ZA\t102.36.248.0\t67584\n"
         "ZA\t102.39.0.0\t65536\n"
         "ZA\t102.65.0.0\t131072\n"
-        "ZA\t102.132.96.0\t110592\n"
         "ZA\t102.182.0.0\t65536\n"
         "ZA\t102.248.0.0\t524288\n"
         "ZA\t105.0.0.0\t1048576\n"
@@ -9489,6 +9502,8 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "ZA\t147.110.0.0\t65536\n"
         "ZA\t152.106.0.0\t131072\n"
         "ZA\t152.109.0.0\t262144\n"
+        "ZA\t154.16.0.0\t65536\n"
+        "ZA\t154.69.0.0\t65536\n"
         "ZA\t155.232.0.0\t589824\n"
         "ZA\t160.115.0.0\t278528\n"
         "ZA\t160.121.0.0\t262144\n"
@@ -9519,11 +9534,11 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "ZM\t41.72.96.0\t8192\n"
         "ZM\t41.77.0.0\t2048\n"
         "ZM\t41.191.116.0\t1024\n"
+        , 15989},
+    std::string_view{
         "ZM\t41.215.176.0\t4096\n"
         "ZM\t41.216.64.0\t8192\n"
         "ZM\t41.222.16.0\t2048\n"
-        , 15983},
-    std::string_view{
         "ZM\t41.223.116.0\t1024\n"
         "ZM\t45.212.0.0\t262144\n"
         "ZM\t80.88.3.0\t256\n"
@@ -9603,13 +9618,13 @@ inline constexpr std::array<std::string_view, 13> file_3{
         "ZW\t196.220.96.0\t8192\n"
         "ZW\t197.157.204.0\t1024\n"
         "ZW\t197.221.224.0\t8192\n"
-        , 1626},
+        , 1687},
 };
 
 // lite/ipv6.tsv
-inline constexpr std::array<std::string_view, 9> file_4{
+inline constexpr std::array<std::string_view, 9> file_5{
     std::string_view{
-        "# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned). See doc/data.md.\n"
+        "# IPv6 prefixes registered to each country, collapsed. Built by scripts/prepare_ip.py from the delegated-extended statistics of AFRINIC, APNIC, ARIN, LACNIC and RIPE NCC (allocated and assigned), without legacy organisation blocks and the published cloud ranges. See doc/data.md.\n"
         "country_code\tprefix\tlength\n"
         "AD\t2a01:fb00::\t29\n"
         "AD\t2a02:8060::\t31\n"
@@ -10478,11 +10493,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "BO\t2803:1330::\t32\n"
         "BO\t2803:1920::\t32\n"
         "BO\t2803:2030::\t32\n"
+        , 16000},
+    std::string_view{
         "BO\t2803:2110::\t32\n"
         "BO\t2803:2690::\t32\n"
         "BO\t2803:2880::\t32\n"
-        , 15987},
-    std::string_view{
         "BO\t2803:2950::\t32\n"
         "BO\t2803:3820::\t32\n"
         "BO\t2803:38c0::\t32\n"
@@ -11374,11 +11389,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "DK\t2a01:f080::\t29\n"
         "DK\t2a02:108::\t29\n"
         "DK\t2a02:188::\t29\n"
+        , 15990},
+    std::string_view{
         "DK\t2a02:980::\t29\n"
         "DK\t2a02:17c0::\t29\n"
         "DK\t2a02:2190::\t29\n"
-        , 15989},
-    std::string_view{
         "DK\t2a02:2338::\t29\n"
         "DK\t2a02:25c8::\t29\n"
         "DK\t2a02:2a30::\t29\n"
@@ -12260,11 +12275,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "HN\t2803:5380::\t32\n"
         "HN\t2803:55a0::\t32\n"
         "HN\t2803:5600::\t32\n"
+        , 15993},
+    std::string_view{
         "HN\t2803:5b50::\t32\n"
         "HN\t2803:5cc0::\t32\n"
         "HN\t2803:5da0::\t32\n"
-        , 15994},
-    std::string_view{
         "HN\t2803:6180::\t32\n"
         "HN\t2803:63a0::\t32\n"
         "HN\t2803:6760::\t32\n"
@@ -13157,11 +13172,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "KH\t2400:3da0::\t32\n"
         "KH\t2400:3ee0::\t32\n"
         "KH\t2400:4880::\t32\n"
+        , 15999},
+    std::string_view{
         "KH\t2400:6060::\t32\n"
         "KH\t2400:87e0::\t32\n"
         "KH\t2400:96a0::\t32\n"
-        , 15999},
-    std::string_view{
         "KH\t2400:b9e0::\t32\n"
         "KH\t2400:d460::\t32\n"
         "KH\t2400:ef20::\t32\n"
@@ -14035,11 +14050,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "MN\t2001:df6:4fc0::\t48\n"
         "MN\t2001:df6:5340::\t48\n"
         "MN\t2001:df6:5a80::\t48\n"
+        , 15984},
+    std::string_view{
         "MN\t2001:df6:c980::\t48\n"
         "MN\t2001:df7:9c0::\t48\n"
         "MN\t2400:7480::\t32\n"
-        , 15991},
-    std::string_view{
         "MN\t2400:bde0::\t32\n"
         "MN\t2400:d4e0::\t32\n"
         "MN\t2400:db80::\t32\n"
@@ -14920,11 +14935,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "PH\t2401:1820::\t32\n"
         "PH\t2401:1b60::\t32\n"
         "PH\t2401:2260::\t32\n"
+        , 15990},
+    std::string_view{
         "PH\t2401:2300::\t32\n"
         "PH\t2401:2880::\t32\n"
         "PH\t2401:33e0::\t32\n"
-        , 15983},
-    std::string_view{
         "PH\t2401:40c0::\t32\n"
         "PH\t2401:4ee0::\t32\n"
         "PH\t2401:4fe0::\t32\n"
@@ -15813,11 +15828,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "SK\t2a0b:4000::\t29\n"
         "SK\t2a0b:62c0::\t29\n"
         "SK\t2a0b:8940::\t29\n"
+        , 15989},
+    std::string_view{
         "SK\t2a0b:d140::\t29\n"
         "SK\t2a0b:f100::\t29\n"
         "SK\t2a0b:f680::\t29\n"
-        , 15989},
-    std::string_view{
         "SK\t2a0c:840::\t29\n"
         "SK\t2a0c:1300::\t29\n"
         "SK\t2a0c:2540::\t29\n"
@@ -16694,11 +16709,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "ZA\t2001:43a8::\t32\n"
         "ZA\t2001:43d8::\t32\n"
         "ZA\t2001:43e8::\t32\n"
+        , 15999},
+    std::string_view{
         "ZA\t2a01:5380::\t32\n"
         "ZA\t2a02:47c0::\t32\n"
         "ZA\t2a05:1680::\t29\n"
-        , 15999},
-    std::string_view{
         "ZA\t2a0b:af00::\t29\n"
         "ZA\t2a0c:2e00::\t29\n"
         "ZA\t2a0c:4540::\t29\n"
@@ -16783,11 +16798,11 @@ inline constexpr std::array<std::string_view, 9> file_4{
         "ZW\t2c0f:f8f0::\t32\n"
         "ZW\t2c0f:fa98::\t32\n"
         "ZW\t2c0f:fd48::\t32\n"
-        , 1526},
+        , 1580},
 };
 
 // lite/maker_shares.tsv
-inline constexpr std::array<std::string_view, 1> file_5{
+inline constexpr std::array<std::string_view, 1> file_6{
     std::string_view{
         "# Makers of each platform's devices by country, relative weights. Country * is the default for countries without rows; a country's rows replace it for that platform. Rough estimates rounded from public vendor share statistics (curated); see doc/data.md.\n"
         "country\tplatform\tmaker\tweight\n"
@@ -16962,7 +16977,7 @@ inline constexpr std::array<std::string_view, 1> file_5{
 };
 
 // lite/models.tsv
-inline constexpr std::array<std::string_view, 1> file_6{
+inline constexpr std::array<std::string_view, 1> file_7{
     std::string_view{
         "# Device models: when each came out, the OS versions it runs (os_last empty: still updated), its screen in CSS pixels (0 when it has none of its own) and the model token its user agent may send. Curated; see doc/data.md for the confidence of each maker's tokens.\n"
         "key\tmaker\tplatform\tmodel\treleased\tos_first\tos_last\twidth\theight\tpixel_ratio\tua_model\tweight\n"
@@ -17112,7 +17127,7 @@ inline constexpr std::array<std::string_view, 1> file_6{
 };
 
 // lite/platform_shares.tsv
-inline constexpr std::array<std::string_view, 1> file_7{
+inline constexpr std::array<std::string_view, 1> file_8{
     std::string_view{
         "# Per-country shares of a platform, in percent: the platforms listed for a country get these shares; the others split the rest of the 100 in proportion to their global weights. The same rows as user-generator's platform_shares.tsv. Authored estimates.\n"
         "country\tkey\tweight\n"
@@ -17178,7 +17193,7 @@ inline constexpr std::array<std::string_view, 1> file_7{
 };
 
 // lite/platforms.tsv
-inline constexpr std::array<std::string_view, 1> file_8{
+inline constexpr std::array<std::string_view, 1> file_9{
     std::string_view{
         "# Device platforms and their global shares. The same keys, labels and weights as user-generator's platforms.tsv, so a user's platform can be passed in. Authored estimates; see doc/data.md.\n"
         "key\tlabel\tdevice\tos\tweight\n"
@@ -17195,7 +17210,7 @@ inline constexpr std::array<std::string_view, 1> file_8{
 };
 
 // lite/releases.tsv
-inline constexpr std::array<std::string_view, 2> file_9{
+inline constexpr std::array<std::string_view, 2> file_10{
     std::string_view{
         "# OS and browser major versions with their first release dates. Built by scripts/prepare_releases.py from endoflife.date, Chromium Dash, Mozilla product-details and curated rows. See doc/data.md.\n"
         "product\tversion\treleased\tfull\n"
@@ -17768,7 +17783,7 @@ inline constexpr std::array<std::string_view, 2> file_9{
 };
 
 // lite/requirements.tsv
-inline constexpr std::array<std::string_view, 1> file_10{
+inline constexpr std::array<std::string_view, 1> file_11{
     std::string_view{
         "# The oldest OS version a browser runs on, from a browser version on: Chrome 110 and later need Windows 10. Approximate, from the vendors' support notices (curated); see doc/data.md.\n"
         "browser\tos\tfrom_version\tmin_os\n"
@@ -17819,7 +17834,7 @@ inline constexpr std::array<std::string_view, 1> file_10{
 };
 
 // lite/reserved.tsv
-inline constexpr std::array<std::string_view, 1> file_11{
+inline constexpr std::array<std::string_view, 1> file_12{
     std::string_view{
         "# Documentation ranges, the only addresses a safe device gets (RFC 5737 and RFC 3849).\n"
         "version\tprefix\tlength\n"
@@ -17831,7 +17846,7 @@ inline constexpr std::array<std::string_view, 1> file_11{
 };
 
 // lite/screens.tsv
-inline constexpr std::array<std::string_view, 1> file_12{
+inline constexpr std::array<std::string_view, 1> file_13{
     std::string_view{
         "# Screen sizes in CSS pixels with the device pixel ratio, for devices whose model has no screen of its own (Windows, Linux, ChromeOS, a Mac mini). Country * is the default. Rounded from StatCounter's resolution shares (curated); see doc/data.md.\n"
         "country\tos\twidth\theight\tpixel_ratio\tweight\n"
@@ -17876,9 +17891,9 @@ inline constexpr std::array<std::string_view, 1> file_12{
 };
 
 // lite/ua_templates.tsv
-inline constexpr std::array<std::string_view, 1> file_13{
+inline constexpr std::array<std::string_view, 1> file_14{
     std::string_view{
-        "# User-agent templates by browser and OS. The row used is the one with the highest min_browser and min_os the device reaches (min_os 26: Apple's frozen iOS token). Placeholders: {os} {os_} {os_full} {model} {v} {full} {mobile} {form}. Curated from the browsers' documentation and observed strings; see doc/data.md.\n"
+        "# User-agent templates by browser and OS. The row used is the one with the highest min_browser and min_os the device reaches (min_os 13: iPad Safari asks for the desktop site; min_os 26: Apple's frozen iOS token). Placeholders: {os} {os_} {os_full} {model} {v} {full} {mobile} {form}. Curated from the browsers' documentation and observed strings; see doc/data.md.\n"
         "browser\tos\tmin_browser\tmin_os\ttemplate\n"
         "chrome\tAndroid\t0\t0\tMozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} {mobile}Safari/537.36\n"
         "chrome\tAndroid\t101\t0\tMozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36\n"
@@ -17896,7 +17911,8 @@ inline constexpr std::array<std::string_view, 1> file_13{
         "firefox\tiOS\t0\t26\tMozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15\n"
         "edge\tiOS\t0\t0\tMozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15\n"
         "edge\tiOS\t0\t26\tMozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15\n"
-        "safari\tiPadOS\t0\t0\tMozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15\n"
+        "safari\tiPadOS\t0\t0\tMozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Mobile/15E148 Safari/604.1\n"
+        "safari\tiPadOS\t0\t13\tMozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15\n"
         "chrome\tiPadOS\t0\t0\tMozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1\n"
         "chrome\tiPadOS\t0\t26\tMozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1\n"
         "firefox\tiPadOS\t0\t0\tMozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15\n"
@@ -17916,11 +17932,11 @@ inline constexpr std::array<std::string_view, 1> file_13{
         "chrome\tLinux\t101\t0\tMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36\n"
         "firefox\tLinux\t0\t0\tMozilla/5.0 (X11; Linux x86_64; rv:{v}.0) Gecko/20100101 Firefox/{v}.0\n"
         "chrome\tChromeOS\t0\t0\tMozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36\n"
-        , 5365},
+        , 5561},
 };
 
 // lite/version_shares.tsv
-inline constexpr std::array<std::string_view, 1> file_14{
+inline constexpr std::array<std::string_view, 1> file_15{
     std::string_view{
         "# Shares of an OS's versions at dates, interpolated linearly between dates and held after the last one; a version has no share before its release. Rounded from StatCounter's desktop Windows version shares (curated); see doc/data.md.\n"
         "product\tversion\tdate\tshare\n"
@@ -17951,22 +17967,23 @@ inline constexpr std::array<std::string_view, 1> file_14{
         , 859},
 };
 
-inline constexpr std::array<core::embedded_file, 15> files{{
+inline constexpr std::array<core::embedded_file, 16> files{{
     core::embedded_file{"lite/adoption.tsv", file_0},
     core::embedded_file{"lite/browser_shares.tsv", file_1},
-    core::embedded_file{"lite/countries.tsv", file_2},
-    core::embedded_file{"lite/ipv4.tsv", file_3},
-    core::embedded_file{"lite/ipv6.tsv", file_4},
-    core::embedded_file{"lite/maker_shares.tsv", file_5},
-    core::embedded_file{"lite/models.tsv", file_6},
-    core::embedded_file{"lite/platform_shares.tsv", file_7},
-    core::embedded_file{"lite/platforms.tsv", file_8},
-    core::embedded_file{"lite/releases.tsv", file_9},
-    core::embedded_file{"lite/requirements.tsv", file_10},
-    core::embedded_file{"lite/reserved.tsv", file_11},
-    core::embedded_file{"lite/screens.tsv", file_12},
-    core::embedded_file{"lite/ua_templates.tsv", file_13},
-    core::embedded_file{"lite/version_shares.tsv", file_14},
+    core::embedded_file{"lite/bundled.tsv", file_2},
+    core::embedded_file{"lite/countries.tsv", file_3},
+    core::embedded_file{"lite/ipv4.tsv", file_4},
+    core::embedded_file{"lite/ipv6.tsv", file_5},
+    core::embedded_file{"lite/maker_shares.tsv", file_6},
+    core::embedded_file{"lite/models.tsv", file_7},
+    core::embedded_file{"lite/platform_shares.tsv", file_8},
+    core::embedded_file{"lite/platforms.tsv", file_9},
+    core::embedded_file{"lite/releases.tsv", file_10},
+    core::embedded_file{"lite/requirements.tsv", file_11},
+    core::embedded_file{"lite/reserved.tsv", file_12},
+    core::embedded_file{"lite/screens.tsv", file_13},
+    core::embedded_file{"lite/ua_templates.tsv", file_14},
+    core::embedded_file{"lite/version_shares.tsv", file_15},
 }};
 // clang-format on
 

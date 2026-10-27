@@ -1,4 +1,4 @@
-# User-agent templates by browser and OS. The row used is the one with the highest min_browser and min_os the device reaches (min_os 26: Apple's frozen iOS token). Placeholders: {os} {os_} {os_full} {model} {v} {full} {mobile} {form}. Curated from the browsers' documentation and observed strings; see doc/data.md.
+# User-agent templates by browser and OS. The row used is the one with the highest min_browser and min_os the device reaches (min_os 13: iPad Safari asks for the desktop site; min_os 26: Apple's frozen iOS token). Placeholders: {os} {os_} {os_full} {model} {v} {full} {mobile} {form}. Curated from the browsers' documentation and observed strings; see doc/data.md.
 browser	os	min_browser	min_os	template
 chrome	Android	0	0	Mozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} {mobile}Safari/537.36
 chrome	Android	101	0	Mozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36
@@ -16,7 +16,8 @@ firefox	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWeb
 firefox	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
 edge	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
 edge	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
-safari	iPadOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15
+safari	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Mobile/15E148 Safari/604.1
+safari	iPadOS	0	13	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15
 chrome	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
 chrome	iPadOS	0	26	Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
 firefox	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
