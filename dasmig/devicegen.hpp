@@ -174,8 +174,9 @@ class device
             out += " on " + os;
             if (!os_version.empty()) out += " " + os_version;
         }
+        // A model named after its maker ("OnePlus 12", "Xiaomi Pad 5") is not prefixed again.
         std::string who = maker;
-        if (!model.empty()) who += who.empty() ? model : " " + model;
+        if (!model.empty()) who = who.empty() || model.starts_with(maker + " ") ? model : who + " " + model;
         if (!who.empty()) out += " (" + who + ")";
         if (!ip.empty()) out += ", " + ip;
         return out;
