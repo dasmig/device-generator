@@ -1,0 +1,144 @@
+# Device models: when each came out, the OS versions it runs (os_last empty: still updated), its screen in CSS pixels (0 when it has none of its own) and the model token its user agent may send. Curated; see doc/data.md for the confidence of each maker's tokens.
+key	maker	platform	model	released	os_first	os_last	width	height	pixel_ratio	ua_model	weight
+iphone-se	Apple	ios-phone	iPhone SE	2016-03-31	9	15	320	568	2	iPhone	2
+iphone-6s	Apple	ios-phone	iPhone 6s	2015-09-25	9	15	375	667	2	iPhone	5
+iphone-6s-plus	Apple	ios-phone	iPhone 6s Plus	2015-09-25	9	15	414	736	3	iPhone	3
+iphone-7	Apple	ios-phone	iPhone 7	2016-09-16	10	15	375	667	2	iPhone	7
+iphone-7-plus	Apple	ios-phone	iPhone 7 Plus	2016-09-16	10	15	414	736	3	iPhone	5
+iphone-8	Apple	ios-phone	iPhone 8	2017-09-22	11	16	375	667	2	iPhone	7
+iphone-8-plus	Apple	ios-phone	iPhone 8 Plus	2017-09-22	11	16	414	736	3	iPhone	5
+iphone-x	Apple	ios-phone	iPhone X	2017-11-03	11	16	375	812	3	iPhone	5
+iphone-xr	Apple	ios-phone	iPhone XR	2018-10-26	12	18	414	896	2	iPhone	10
+iphone-xs	Apple	ios-phone	iPhone XS	2018-09-21	12	18	375	812	3	iPhone	4
+iphone-xs-max	Apple	ios-phone	iPhone XS Max	2018-09-21	12	18	414	896	3	iPhone	4
+iphone-11	Apple	ios-phone	iPhone 11	2019-09-20	13		414	896	2	iPhone	14
+iphone-11-pro	Apple	ios-phone	iPhone 11 Pro	2019-09-20	13		375	812	3	iPhone	5
+iphone-11-pro-max	Apple	ios-phone	iPhone 11 Pro Max	2019-09-20	13		414	896	3	iPhone	5
+iphone-se-2	Apple	ios-phone	iPhone SE (2nd generation)	2020-04-24	13		375	667	2	iPhone	6
+iphone-12	Apple	ios-phone	iPhone 12	2020-10-23	14		390	844	3	iPhone	12
+iphone-12-mini	Apple	ios-phone	iPhone 12 mini	2020-11-13	14		375	812	3	iPhone	3
+iphone-12-pro	Apple	ios-phone	iPhone 12 Pro	2020-10-23	14		390	844	3	iPhone	5
+iphone-12-pro-max	Apple	ios-phone	iPhone 12 Pro Max	2020-11-13	14		428	926	3	iPhone	5
+iphone-13	Apple	ios-phone	iPhone 13	2021-09-24	15		390	844	3	iPhone	14
+iphone-13-mini	Apple	ios-phone	iPhone 13 mini	2021-09-24	15		375	812	3	iPhone	3
+iphone-13-pro	Apple	ios-phone	iPhone 13 Pro	2021-09-24	15		390	844	3	iPhone	6
+iphone-13-pro-max	Apple	ios-phone	iPhone 13 Pro Max	2021-09-24	15		428	926	3	iPhone	6
+iphone-se-3	Apple	ios-phone	iPhone SE (3rd generation)	2022-03-18	15		375	667	2	iPhone	4
+iphone-14	Apple	ios-phone	iPhone 14	2022-09-16	16		390	844	3	iPhone	10
+iphone-14-plus	Apple	ios-phone	iPhone 14 Plus	2022-10-07	16		428	926	3	iPhone	4
+iphone-14-pro	Apple	ios-phone	iPhone 14 Pro	2022-09-16	16		393	852	3	iPhone	7
+iphone-14-pro-max	Apple	ios-phone	iPhone 14 Pro Max	2022-09-16	16		430	932	3	iPhone	8
+iphone-15	Apple	ios-phone	iPhone 15	2023-09-22	17		393	852	3	iPhone	10
+iphone-15-plus	Apple	ios-phone	iPhone 15 Plus	2023-09-22	17		430	932	3	iPhone	4
+iphone-15-pro	Apple	ios-phone	iPhone 15 Pro	2023-09-22	17		393	852	3	iPhone	7
+iphone-15-pro-max	Apple	ios-phone	iPhone 15 Pro Max	2023-09-22	17		430	932	3	iPhone	9
+iphone-16	Apple	ios-phone	iPhone 16	2024-09-20	18		393	852	3	iPhone	10
+iphone-16-plus	Apple	ios-phone	iPhone 16 Plus	2024-09-20	18		430	932	3	iPhone	4
+iphone-16-pro	Apple	ios-phone	iPhone 16 Pro	2024-09-20	18		402	874	3	iPhone	7
+iphone-16-pro-max	Apple	ios-phone	iPhone 16 Pro Max	2024-09-20	18		440	956	3	iPhone	9
+iphone-16e	Apple	ios-phone	iPhone 16e	2025-02-28	18		390	844	3	iPhone	4
+iphone-17	Apple	ios-phone	iPhone 17	2025-09-19	26		402	874	3	iPhone	10
+iphone-air	Apple	ios-phone	iPhone Air	2025-09-19	26		420	912	3	iPhone	4
+iphone-17-pro	Apple	ios-phone	iPhone 17 Pro	2025-09-19	26		402	874	3	iPhone	7
+iphone-17-pro-max	Apple	ios-phone	iPhone 17 Pro Max	2025-09-19	26		440	956	3	iPhone	9
+ipad-6	Apple	ipad	iPad (6th generation)	2018-03-27	11	17	768	1024	2	iPad	5
+ipad-7	Apple	ipad	iPad (7th generation)	2019-09-25	13	18	810	1080	2	iPad	6
+ipad-8	Apple	ipad	iPad (8th generation)	2020-09-18	14		810	1080	2	iPad	7
+ipad-9	Apple	ipad	iPad (9th generation)	2021-09-24	15		810	1080	2	iPad	10
+ipad-10	Apple	ipad	iPad (10th generation)	2022-10-26	16		820	1180	2	iPad	8
+ipad-a16	Apple	ipad	iPad (A16)	2025-03-12	18		820	1180	2	iPad	5
+ipad-air-4	Apple	ipad	iPad Air (4th generation)	2020-10-23	14		820	1180	2	iPad	4
+ipad-air-5	Apple	ipad	iPad Air (5th generation)	2022-03-18	15		820	1180	2	iPad	4
+ipad-air-m2	Apple	ipad	iPad Air 11-inch (M2)	2024-05-15	17		820	1180	2	iPad	3
+ipad-mini-5	Apple	ipad	iPad mini (5th generation)	2019-03-18	12		768	1024	2	iPad	2
+ipad-mini-6	Apple	ipad	iPad mini (6th generation)	2021-09-24	15		744	1133	2	iPad	3
+ipad-pro-11	Apple	ipad	iPad Pro 11-inch	2018-11-07	12		834	1194	2	iPad	3
+ipad-pro-12-9	Apple	ipad	iPad Pro 12.9-inch	2018-11-07	12		1024	1366	2	iPad	3
+ipad-pro-m4	Apple	ipad	iPad Pro 11-inch (M4)	2024-05-15	17		834	1210	2	iPad	2
+macbook-air-2020	Apple	macos-desktop	MacBook Air (Retina, 13-inch, 2020)	2020-03-18	10.15	15	1440	900	2		3
+macbook-pro-16-2019	Apple	macos-desktop	MacBook Pro (16-inch, 2019)	2019-11-13	10.15	26	1536	960	2		3
+macbook-air-m1	Apple	macos-desktop	MacBook Air (M1, 2020)	2020-11-17	11		1440	900	2		12
+macbook-pro-13-m1	Apple	macos-desktop	MacBook Pro (13-inch, M1, 2020)	2020-11-17	11		1440	900	2		6
+imac-24-m1	Apple	macos-desktop	iMac (24-inch, M1, 2021)	2021-05-21	11		2240	1260	2		3
+macbook-pro-14-2021	Apple	macos-desktop	MacBook Pro (14-inch, 2021)	2021-10-26	12		1512	982	2		7
+macbook-pro-16-2021	Apple	macos-desktop	MacBook Pro (16-inch, 2021)	2021-10-26	12		1728	1117	2		4
+macbook-air-m2	Apple	macos-desktop	MacBook Air (M2, 2022)	2022-07-15	12		1470	956	2		8
+mac-mini-m2	Apple	macos-desktop	Mac mini (M2, 2023)	2023-01-24	13		0	0	0		2
+macbook-air-15-m2	Apple	macos-desktop	MacBook Air (15-inch, M2, 2023)	2023-06-13	13		1710	1107	2		4
+macbook-air-m3	Apple	macos-desktop	MacBook Air (13-inch, M3, 2024)	2024-03-08	14		1470	956	2		6
+mac-mini-m4	Apple	macos-desktop	Mac mini (M4, 2024)	2024-11-08	15		0	0	0		2
+macbook-pro-14-m4	Apple	macos-desktop	MacBook Pro (14-inch, M4, 2024)	2024-11-08	15		1512	982	2		3
+macbook-air-m4	Apple	macos-desktop	MacBook Air (13-inch, M4, 2025)	2025-03-12	15		1470	956	2		5
+mac-mini-m1	Apple	macos-desktop	Mac mini (M1, 2020)	2020-11-17	11		0	0	0		3
+galaxy-a10	Samsung	android-phone	Galaxy A10	2019-03-15	9	11	360	760	2	SM-A105F	4
+galaxy-a51	Samsung	android-phone	Galaxy A51	2019-12-16	10	13	412	915	2.625	SM-A515F	6
+galaxy-s20	Samsung	android-phone	Galaxy S20	2020-03-06	10	13	360	800	3	SM-G981B	3
+galaxy-a12	Samsung	android-phone	Galaxy A12	2020-11-24	10	13	360	800	2	SM-A125F	8
+galaxy-s21	Samsung	android-phone	Galaxy S21	2021-01-29	11	15	360	800	3	SM-G991B	4
+galaxy-a32	Samsung	android-phone	Galaxy A32	2021-02-25	11	13	412	915	2.625	SM-A325F	5
+galaxy-a52	Samsung	android-phone	Galaxy A52	2021-03-26	11	14	412	915	2.625	SM-A525F	5
+galaxy-s22	Samsung	android-phone	Galaxy S22	2022-02-25	12	16	360	780	3	SM-S901B	4
+galaxy-a13	Samsung	android-phone	Galaxy A13	2022-03-23	12	14	412	915	2.625	SM-A135F	7
+galaxy-a53	Samsung	android-phone	Galaxy A53	2022-03-24	12	16	412	915	2.625	SM-A536B	5
+galaxy-a14	Samsung	android-phone	Galaxy A14	2023-01-20	13	15	412	915	2.625	SM-A145F	8
+galaxy-s23	Samsung	android-phone	Galaxy S23	2023-02-17	13		360	780	3	SM-S911B	5
+galaxy-s23-ultra	Samsung	android-phone	Galaxy S23 Ultra	2023-02-17	13		384	824	2.8125	SM-S918B	3
+galaxy-a54	Samsung	android-phone	Galaxy A54	2023-03-24	13		412	915	2.625	SM-A546B	6
+galaxy-a05s	Samsung	android-phone	Galaxy A05s	2023-10-18	13	15	412	915	2.625	SM-A057F	4
+galaxy-a15	Samsung	android-phone	Galaxy A15	2023-12-16	14		412	915	2.625	SM-A155F	8
+galaxy-a25	Samsung	android-phone	Galaxy A25	2023-12-16	14		412	915	2.625	SM-A256B	4
+galaxy-s24	Samsung	android-phone	Galaxy S24	2024-01-31	14		360	780	3	SM-S921B	5
+galaxy-s24-ultra	Samsung	android-phone	Galaxy S24 Ultra	2024-01-31	14		384	824	2.8125	SM-S928B	3
+galaxy-a35	Samsung	android-phone	Galaxy A35	2024-03-11	14		412	915	2.625	SM-A356B	4
+galaxy-a55	Samsung	android-phone	Galaxy A55	2024-03-11	14		412	915	2.625	SM-A556B	5
+galaxy-a16	Samsung	android-phone	Galaxy A16	2024-10-07	14		412	915	2.625	SM-A165F	6
+galaxy-s25	Samsung	android-phone	Galaxy S25	2025-02-07	15		360	780	3	SM-S931B	4
+redmi-note-8	Xiaomi	android-phone	Redmi Note 8	2019-08-29	9	11	393	851	2.75	Redmi Note 8	5
+redmi-note-9	Xiaomi	android-phone	Redmi Note 9	2020-04-30	10	12	393	851	2.75	Redmi Note 9	5
+redmi-9a	Xiaomi	android-phone	Redmi 9A	2020-07-07	10	11	360	800	2	M2006C3LG	5
+redmi-9c	Xiaomi	android-phone	Redmi 9C	2020-07-07	10	11	360	800	2	M2006C3MG	4
+poco-x3-nfc	Xiaomi	android-phone	POCO X3 NFC	2020-09-08	10	12	393	873	2.75	M2007J20CG	3
+redmi-note-10-pro	Xiaomi	android-phone	Redmi Note 10 Pro	2021-03-04	11	13	393	873	2.75	M2101K6G	5
+redmi-note-11	Xiaomi	android-phone	Redmi Note 11	2022-01-26	11	13	393	873	2.75	2201117TG	6
+redmi-note-12	Xiaomi	android-phone	Redmi Note 12	2023-03-23	13	15	393	873	2.75	23021RAA2Y	6
+redmi-note-13	Xiaomi	android-phone	Redmi Note 13	2024-01-15	13		393	873	2.75	Redmi Note 13	6
+pixel-4a	Google	android-phone	Pixel 4a	2020-08-20	11	13	393	851	2.75	Pixel 4a	3
+pixel-5	Google	android-phone	Pixel 5	2020-10-15	11	14	393	851	2.75	Pixel 5	3
+pixel-6	Google	android-phone	Pixel 6	2021-10-28	12	15	412	915	2.625	Pixel 6	4
+pixel-6a	Google	android-phone	Pixel 6a	2022-07-28	12	16	412	915	2.625	Pixel 6a	4
+pixel-7	Google	android-phone	Pixel 7	2022-10-13	13		412	915	2.625	Pixel 7	5
+pixel-7a	Google	android-phone	Pixel 7a	2023-05-11	13		412	915	2.625	Pixel 7a	4
+pixel-8	Google	android-phone	Pixel 8	2023-10-12	14		412	915	2.625	Pixel 8	5
+pixel-8a	Google	android-phone	Pixel 8a	2024-05-14	14		412	915	2.625	Pixel 8a	3
+pixel-9	Google	android-phone	Pixel 9	2024-08-22	14		412	915	2.625	Pixel 9	4
+pixel-10	Google	android-phone	Pixel 10	2025-08-28	16		412	915	2.625	Pixel 10	3
+moto-g30	Motorola	android-phone	moto g30	2021-03-01	11	12	360	800	2	moto g(30)	4
+moto-g60	Motorola	android-phone	moto g60	2021-04-20	11	12	412	915	2.625	moto g(60)	3
+moto-g-stylus-5g	Motorola	android-phone	moto g stylus 5G	2021-06-14	11	12	412	915	2.625	moto g stylus 5G	3
+moto-g-power-2022	Motorola	android-phone	moto g power (2022)	2022-01-13	11	12	360	800	2	moto g power (2022)	4
+moto-g-play-2023	Motorola	android-phone	moto g play (2023)	2023-01-05	12	12	360	800	2	moto g play - 2023	3
+moto-g54	Motorola	android-phone	moto g54 5G	2023-09-05	13	14	412	915	2.625	moto g54 5G	4
+moto-g84	Motorola	android-phone	moto g84 5G	2023-09-05	13	14	412	915	2.625	moto g84 5G	3
+huawei-p30	Huawei	android-phone	P30	2019-03-26	9	10	360	780	3	ELE-L29	3
+huawei-p30-pro	Huawei	android-phone	P30 Pro	2019-03-26	9	10	360	780	3	VOG-L29	2
+huawei-p30-lite	Huawei	android-phone	P30 lite	2019-04-25	9	10	360	780	3	MAR-LX1A	4
+huawei-p40-lite	Huawei	android-phone	P40 lite	2020-02-21	10	10	360	800	3	JNY-LX1	4
+oppo-a15	Oppo	android-phone	A15	2020-10-01	10	11	360	800	2	CPH2185	4
+oppo-a54	Oppo	android-phone	A54	2021-04-20	10	12	360	800	2	CPH2239	4
+oppo-a57	Oppo	android-phone	A57	2022-06-01	12	13	360	800	2	CPH2387	4
+vivo-y11	Vivo	android-phone	Y11	2019-10-15	9	10	360	760	2	vivo 1906	4
+vivo-y12s	Vivo	android-phone	Y12s	2020-11-20	10	11	360	800	2	V2026	4
+vivo-y21	Vivo	android-phone	Y21	2021-08-20	11	12	360	800	2	V2111	4
+realme-c11	Realme	android-phone	C11	2020-07-07	10	11	360	800	2	RMX2185	4
+realme-8	Realme	android-phone	realme 8	2021-03-24	11	13	412	915	2.625	RMX3085	4
+oneplus-8	OnePlus	android-phone	OnePlus 8	2020-04-21	10	13	412	915	2.625	IN2013	3
+oneplus-9	OnePlus	android-phone	OnePlus 9	2021-03-26	11	14	412	915	2.625	LE2113	3
+oneplus-11	OnePlus	android-phone	OnePlus 11	2023-02-07	13		412	915	2.625	CPH2449	3
+oneplus-12	OnePlus	android-phone	OnePlus 12	2024-01-23	14		412	915	2.625	CPH2581	3
+galaxy-tab-a-10-1	Samsung	android-tablet	Galaxy Tab A 10.1 (2019)	2019-03-01	9	11	800	1280	1.5	SM-T510	5
+galaxy-tab-a7	Samsung	android-tablet	Galaxy Tab A7	2020-09-11	10	12	800	1340	1.5	SM-T500	6
+galaxy-tab-a8	Samsung	android-tablet	Galaxy Tab A8	2022-01-17	11	14	800	1280	1.5	SM-X200	6
+galaxy-tab-s8	Samsung	android-tablet	Galaxy Tab S8	2022-02-25	12	15	800	1280	2	SM-X700	3
+galaxy-tab-a9	Samsung	android-tablet	Galaxy Tab A9	2023-10-01	13		800	1340	1.5	SM-X110	5
+lenovo-tab-m10	Lenovo	android-tablet	Tab M10 FHD Plus	2020-03-01	9	10	800	1280	1.5	Lenovo TB-X606F	5
+xiaomi-pad-5	Xiaomi	android-tablet	Xiaomi Pad 5	2021-09-27	11	13	800	1280	2	21051182G	4

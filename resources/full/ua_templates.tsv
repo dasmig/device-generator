@@ -1,0 +1,38 @@
+# User-agent templates by browser and OS. The row used is the one with the highest min_browser and min_os the device reaches (min_os 26: Apple's frozen iOS token). Placeholders: {os} {os_} {os_full} {model} {v} {full} {mobile} {form}. Curated from the browsers' documentation and observed strings; see doc/data.md.
+browser	os	min_browser	min_os	template
+chrome	Android	0	0	Mozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} {mobile}Safari/537.36
+chrome	Android	101	0	Mozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36
+chrome	Android	110	0	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36
+edge	Android	0	0	Mozilla/5.0 (Linux; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36 EdgA/{v}.0.0.0
+edge	Android	110	0	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 {mobile}Safari/537.36 EdgA/{v}.0.0.0
+firefox	Android	0	0	Mozilla/5.0 (Android {os}; {form}; rv:{v}.0) Gecko/{v}.0 Firefox/{v}.0
+samsung	Android	0	0	Mozilla/5.0 (Linux; Android {os}; SAMSUNG {model}) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/{v} Chrome/{full} {mobile}Safari/537.36
+samsung	Android	20	0	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/{v} Chrome/{full} {mobile}Safari/537.36
+safari	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Mobile/15E148 Safari/604.1
+safari	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Mobile/15E148 Safari/604.1
+chrome	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
+chrome	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
+firefox	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
+firefox	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
+edge	iOS	0	0	Mozilla/5.0 (iPhone; CPU iPhone OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
+edge	iOS	0	26	Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
+safari	iPadOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15
+chrome	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
+chrome	iPadOS	0	26	Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/{full} Mobile/15E148 Safari/604.1
+firefox	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
+firefox	iPadOS	0	26	Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/{v}.0 Mobile/15E148 Safari/605.1.15
+edge	iPadOS	0	0	Mozilla/5.0 (iPad; CPU OS {os_} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
+edge	iPadOS	0	26	Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/{v}.0.0.0 Mobile/15E148 Safari/605.1.15
+chrome	Windows	0	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36
+chrome	Windows	101	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
+edge	Windows	0	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36 Edg/{v}.0.0.0
+firefox	Windows	0	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64; rv:{v}.0) Gecko/20100101 Firefox/{v}.0
+safari	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/{v} Safari/605.1.15
+chrome	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36
+chrome	macOS	101	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
+edge	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36 Edg/{v}.0.0.0
+firefox	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:{v}.0) Gecko/20100101 Firefox/{v}.0
+chrome	Linux	0	0	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36
+chrome	Linux	101	0	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
+firefox	Linux	0	0	Mozilla/5.0 (X11; Linux x86_64; rv:{v}.0) Gecko/20100101 Firefox/{v}.0
+chrome	ChromeOS	0	0	Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
