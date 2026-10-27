@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <initializer_list>
 #include <format>
 #include <limits>
 #include <map>
@@ -166,7 +167,8 @@ class device
             out += " on " + os;
             if (!os_version.empty()) out += " " + os_version;
         }
-        const std::string who = maker.empty() ? model : (model.empty() ? maker : maker + " " + model);
+        std::string who = maker;
+        if (!model.empty()) who += who.empty() ? model : " " + model;
         if (!who.empty()) out += " (" + who + ")";
         if (!ip.empty()) out += ", " + ip;
         return out;
@@ -841,7 +843,7 @@ class dvg
     static double share_(const core::tsv_row& row, std::string_view column)
     {
         const auto s = row.get<double>(column);
-        if (!(s >= 0.0 && s <= 1.0)) throw row.error(column, "must be between 0 and 1");
+        if (std::isnan(s) || s < 0.0 || s > 1.0) throw row.error(column, "must be between 0 and 1");
         return s;
     }
 
@@ -978,45 +980,52 @@ class dvg
         return out;
     }
 
+    static std::optional<std::uint16_t> parse_hex16_(std::string_view g)
+    {
+        if (g.empty() || g.size() > 4) return std::nullopt;
+        std::uint32_t v = 0;
+        for (const char c : g)
+        {
+            v <<= 4U;
+            if (c >= '0' && c <= '9') v |= static_cast<std::uint32_t>(c - '0');
+            else if (c >= 'a' && c <= 'f') v |= static_cast<std::uint32_t>(c - 'a' + 10);
+            else if (c >= 'A' && c <= 'F') v |= static_cast<std::uint32_t>(c - 'A' + 10);
+            else return std::nullopt;
+        }
+        return static_cast<std::uint16_t>(v);
+    }
+
+    // Hex groups separated by ':' ("2a01:fb00"); false on anything else.
+    static bool parse_ipv6_groups_(std::string_view part, std::vector<std::uint16_t>& out)
+    {
+        if (part.empty()) return true;
+        std::size_t start = 0;
+        for (;;)
+        {
+            const auto end = part.find(':', start);
+            const auto v = parse_hex16_(part.substr(start, end == std::string_view::npos ? part.size() - start : end - start));
+            if (!v) return false;
+            out.push_back(*v);
+            if (end == std::string_view::npos) return true;
+            start = end + 1;
+        }
+    }
+
     static std::optional<ipv6_net> parse_ipv6_(std::string_view text)
     {
-        std::array<std::uint16_t, 8> groups{};
         std::vector<std::uint16_t> head;
         std::vector<std::uint16_t> tail;
         const auto gap = text.find("::");
-        const auto parse_groups = [](std::string_view part, std::vector<std::uint16_t>& out) -> bool {
-            if (part.empty()) return true;
-            std::size_t start = 0;
-            for (;;)
-            {
-                const auto end = part.find(':', start);
-                const auto g = part.substr(start, end == std::string_view::npos ? part.size() - start : end - start);
-                if (g.empty() || g.size() > 4) return false;
-                std::uint32_t v = 0;
-                for (const char c : g)
-                {
-                    v <<= 4U;
-                    if (c >= '0' && c <= '9') v |= static_cast<std::uint32_t>(c - '0');
-                    else if (c >= 'a' && c <= 'f') v |= static_cast<std::uint32_t>(c - 'a' + 10);
-                    else if (c >= 'A' && c <= 'F') v |= static_cast<std::uint32_t>(c - 'A' + 10);
-                    else return false;
-                }
-                out.push_back(static_cast<std::uint16_t>(v));
-                if (end == std::string_view::npos) return true;
-                start = end + 1;
-            }
-        };
         if (gap == std::string_view::npos)
         {
-            if (!parse_groups(text, head) || head.size() != 8) return std::nullopt;
+            if (!parse_ipv6_groups_(text, head) || head.size() != 8) return std::nullopt;
         }
-        else
+        else if (text.find("::", gap + 1) != std::string_view::npos || !parse_ipv6_groups_(text.substr(0, gap), head) ||
+                 !parse_ipv6_groups_(text.substr(gap + 2), tail) || head.size() + tail.size() > 7)
         {
-            if (text.find("::", gap + 1) != std::string_view::npos) return std::nullopt;
-            if (!parse_groups(text.substr(0, gap), head) || !parse_groups(text.substr(gap + 2), tail) ||
-                head.size() + tail.size() > 7)
-                return std::nullopt;
+            return std::nullopt;
         }
+        std::array<std::uint16_t, 8> groups{};
         std::ranges::copy(head, groups.begin());
         std::ranges::copy(tail, groups.end() - static_cast<std::ptrdiff_t>(tail.size()));
         ipv6_net n;
@@ -1025,41 +1034,87 @@ class dvg
         return n;
     }
 
+    static void validate_countries_(const core::tsv_row& row)
+    {
+        (void)country_(row);
+        if (!(row.get<double>("population") >= 0.0)) throw row.error("population", "must not be negative");
+        (void)share_(row, "internet_share");
+        (void)share_(row, "ipv6_share");
+    }
+
+    static void validate_platforms_(const core::tsv_row& row)
+    {
+        for (const char* column : {"key", "label", "device", "os"}) (void)nonempty_(row, column);
+        if (!kind_of_(row.get<std::string>("device")))
+            throw row.error("device", "must be phone, tablet, desktop or other");
+        (void)weight_(row);
+    }
+
+    static void validate_models_(const core::tsv_row& row)
+    {
+        for (const char* column : {"maker", "platform", "model"}) (void)nonempty_(row, column);
+        (void)day_(row, "released");
+        (void)version_(row, "os_first");
+        if (!row.get_or<std::string>("os_last", "").empty()) (void)version_(row, "os_last");
+        if (row.get_or<int>("width", 0) < 0 || row.get_or<int>("height", 0) < 0 ||
+            !(row.get_or<double>("pixel_ratio", 0.0) >= 0.0))
+            throw row.error("width", "the screen must not be negative");
+        (void)weight_(row);
+    }
+
+    static void validate_screens_(const core::tsv_row& row)
+    {
+        (void)country_or_any_(row);
+        if (row.get<int>("width") <= 0 || row.get<int>("height") <= 0 || !(row.get<double>("pixel_ratio") > 0.0))
+            throw row.error("width", "the screen must be positive");
+        (void)weight_(row);
+    }
+
+    static void validate_ipv4_(const core::tsv_row& row)
+    {
+        (void)country_(row);
+        if (!parse_ipv4_(row.get<std::string>("start"))) throw row.error("start", "must be a dotted quad");
+        if (const auto s = row.get<std::uint64_t>("size"); s == 0 || s > (std::uint64_t{1} << 32U))
+            throw row.error("size", "must be between 1 and 2^32");
+    }
+
+    static void validate_ipv6_(const core::tsv_row& row)
+    {
+        (void)country_(row);
+        if (!parse_ipv6_(row.get<std::string>("prefix"))) throw row.error("prefix", "must be an IPv6 address");
+        if (const auto n = row.get<int>("length"); n < 1 || n > 128)
+            throw row.error("length", "must be between 1 and 128");
+    }
+
+    static void validate_reserved_(const core::tsv_row& row)
+    {
+        const auto v = row.get<int>("version");
+        if (v != 4 && v != 6) throw row.error("version", "must be 4 or 6");
+        const bool ok = v == 4 ? parse_ipv4_(row.get<std::string>("prefix")).has_value()
+                               : parse_ipv6_(row.get<std::string>("prefix")).has_value();
+        if (!ok) throw row.error("prefix", v == 4 ? "must be a dotted quad" : "must be an IPv6 address");
+        const auto n = row.get<int>("length");
+        if (n < 1 || n > (v == 4 ? 30 : 64))
+            throw row.error("length", v == 4 ? "must be between 1 and 30 for IPv4" : "must be between 1 and 64 for IPv6");
+    }
+
     static void validate_(table t, const core::tsv_row& row)
     {
         switch (t)
         {
-        case table::countries:
-            (void)country_(row);
-            if (!(row.get<double>("population") >= 0.0)) throw row.error("population", "must not be negative");
-            (void)share_(row, "internet_share");
-            (void)share_(row, "ipv6_share");
-            break;
-        case table::platforms:
-            for (const char* column : {"key", "label", "device", "os"}) (void)nonempty_(row, column);
-            if (const auto d = row.get<std::string>("device"); !kind_of_(d))
-                throw row.error("device", "must be phone, tablet, desktop or other");
-            (void)weight_(row);
-            break;
+        case table::countries: validate_countries_(row); break;
+        case table::platforms: validate_platforms_(row); break;
         case table::platform_shares:
             if (!core::is_alpha2(row.get<std::string>("country")))
                 throw row.error("country", "must be an upper case ISO 3166-1 alpha-2 code");
             (void)weight_(row);
             break;
         case table::maker_shares:
+        case table::browser_shares:
             (void)country_or_any_(row);
             (void)weight_(row);
             break;
-        case table::models:
-            for (const char* column : {"maker", "platform", "model"}) (void)nonempty_(row, column);
-            (void)day_(row, "released");
-            (void)version_(row, "os_first");
-            if (!row.get_or<std::string>("os_last", "").empty()) (void)version_(row, "os_last");
-            if (row.get_or<int>("width", 0) < 0 || row.get_or<int>("height", 0) < 0 ||
-                !(row.get_or<double>("pixel_ratio", 0.0) >= 0.0))
-                throw row.error("width", "the screen must not be negative");
-            (void)weight_(row);
-            break;
+        case table::models: validate_models_(row); break;
         case table::releases:
             (void)version_(row, "version");
             (void)day_(row, "released");
@@ -1077,66 +1132,32 @@ class dvg
             if (row.get<int>("from_version") < 0) throw row.error("from_version", "must not be negative");
             (void)version_(row, "min_os");
             break;
-        case table::browser_shares:
-            (void)country_or_any_(row);
-            (void)weight_(row);
-            break;
         case table::ua_templates: (void)nonempty_(row, "template"); break;
-        case table::screens:
-            (void)country_or_any_(row);
-            if (row.get<int>("width") <= 0 || row.get<int>("height") <= 0 || !(row.get<double>("pixel_ratio") > 0.0))
-                throw row.error("width", "the screen must be positive");
-            (void)weight_(row);
-            break;
-        case table::ipv4:
-            (void)country_(row);
-            if (!parse_ipv4_(row.get<std::string>("start"))) throw row.error("start", "must be a dotted quad");
-            if (const auto s = row.get<std::uint64_t>("size"); s == 0 || s > (std::uint64_t{1} << 32U))
-                throw row.error("size", "must be between 1 and 2^32");
-            break;
-        case table::ipv6:
-            (void)country_(row);
-            if (!parse_ipv6_(row.get<std::string>("prefix"))) throw row.error("prefix", "must be an IPv6 address");
-            if (const auto n = row.get<int>("length"); n < 1 || n > 128)
-                throw row.error("length", "must be between 1 and 128");
-            break;
-        case table::reserved:
-        {
-            const auto v = row.get<int>("version");
-            const auto n = row.get<int>("length");
-            if (v == 4)
-            {
-                if (!parse_ipv4_(row.get<std::string>("prefix"))) throw row.error("prefix", "must be a dotted quad");
-                if (n < 1 || n > 30) throw row.error("length", "must be between 1 and 30 for IPv4");
-            }
-            else if (v == 6)
-            {
-                if (!parse_ipv6_(row.get<std::string>("prefix")))
-                    throw row.error("prefix", "must be an IPv6 address");
-                if (n < 1 || n > 64) throw row.error("length", "must be between 1 and 64 for IPv6");
-            }
-            else
-            {
-                throw row.error("version", "must be 4 or 6");
-            }
-            break;
-        }
+        case table::screens: validate_screens_(row); break;
+        case table::ipv4: validate_ipv4_(row); break;
+        case table::ipv6: validate_ipv6_(row); break;
+        case table::reserved: validate_reserved_(row); break;
         }
     }
 
-    static std::string join_(std::string_view a, std::string_view b)
+    // A lookup key: the parts joined by tabs.
+    static std::string join_(std::initializer_list<std::string_view> parts)
     {
-        std::string out{a};
-        out += '\t';
-        out += b;
+        std::string out;
+        for (const auto part : parts)
+        {
+            if (!out.empty()) out += '\t';
+            out += part;
+        }
         return out;
     }
 
-    static model build_model_(const tables& tbl)
-    {
-        model m;
-        const auto rows = [&](table t) { return tbl.at(index_(t)).rows(); };
+    static std::vector<core::tsv_row> rows_(const tables& tbl, table t) { return tbl.at(index_(t)).rows(); }
 
+    // Countries, platforms, makers and models.
+    static void build_devices_(model& m, const tables& tbl)
+    {
+        const auto rows = [&](table t) { return rows_(tbl, t); };
         for (const auto& row : rows(table::countries))
         {
             m.countries.push_back({.code = country_(row),
@@ -1157,7 +1178,7 @@ class dvg
             m.platform_shares[row.get<std::string>("country")].emplace_back(row.get<std::string>("key"), weight_(row));
         for (const auto& row : rows(table::maker_shares))
         {
-            m.maker_shares[join_(country_or_any_(row), row.get<std::string>("platform"))].emplace_back(
+            m.maker_shares[join_({country_or_any_(row), row.get<std::string>("platform")})].emplace_back(
                 row.get<std::string>("maker"), weight_(row));
         }
         for (const auto& row : rows(table::models))
@@ -1175,9 +1196,15 @@ class dvg
                         .ua_model = row.get_or<std::string>("ua_model", ""),
                         .weight = weight_(row)};
             if (!row.get_or<std::string>("os_last", "").empty()) r.os_last = version_(row, "os_last");
-            m.models_by[join_(r.platform, r.maker)].push_back(m.models.size());
+            m.models_by[join_({r.platform, r.maker})].push_back(m.models.size());
             m.models.push_back(std::move(r));
         }
+    }
+
+    // Releases, adoption curves, version shares and requirements.
+    static void build_versions_(model& m, const tables& tbl)
+    {
+        const auto rows = [&](table t) { return rows_(tbl, t); };
         for (const auto& row : rows(table::releases))
         {
             m.releases[row.get<std::string>("product")].push_back({.version = row.get<std::string>("version"),
@@ -1208,30 +1235,41 @@ class dvg
             for (auto& [version, points] : versions) std::ranges::sort(points);
         for (const auto& row : rows(table::requirements))
         {
-            m.requirements[join_(row.get<std::string>("browser"), row.get<std::string>("os"))].push_back(
+            m.requirements[join_({row.get<std::string>("browser"), row.get<std::string>("os")})].push_back(
                 {.from = row.get<int>("from_version"), .min_os = version_(row, "min_os")});
         }
+    }
+
+    // Browser shares, user-agent templates and screens.
+    static void build_browsers_(model& m, const tables& tbl)
+    {
+        const auto rows = [&](table t) { return rows_(tbl, t); };
         for (const auto& row : rows(table::browser_shares))
         {
-            m.browser_shares[join_(country_or_any_(row), row.get<std::string>("os"))].emplace_back(
+            m.browser_shares[join_({country_or_any_(row), row.get<std::string>("os")})].emplace_back(
                 row.get<std::string>("browser"), weight_(row));
         }
         for (const auto& row : rows(table::ua_templates))
         {
-            m.ua_templates[join_(row.get<std::string>("browser"), row.get<std::string>("os"))].push_back(
+            m.ua_templates[join_({row.get<std::string>("browser"), row.get<std::string>("os")})].push_back(
                 {.min_browser = row.get<int>("min_browser"),
                  .min_os = row.get<int>("min_os"),
                  .text = row.get<std::string>("template")});
         }
         for (const auto& row : rows(table::screens))
         {
-            m.screens[join_(country_or_any_(row), row.get<std::string>("os"))].push_back(
+            m.screens[join_({country_or_any_(row), row.get<std::string>("os")})].push_back(
                 {.screen = {.width = row.get<int>("width"),
                             .height = row.get<int>("height"),
                             .pixel_ratio = row.get<double>("pixel_ratio")},
                  .weight = weight_(row)});
         }
+    }
 
+    // IP blocks and the documentation ranges.
+    static void build_addresses_(model& m, const tables& tbl)
+    {
+        const auto rows = [&](table t) { return rows_(tbl, t); };
         for (const auto& row : rows(table::ipv4))
         {
             auto& set = m.ipv4[country_(row)];
@@ -1270,6 +1308,15 @@ class dvg
                 m.reserved6.push_back(net);
             }
         }
+    }
+
+    static model build_model_(const tables& tbl)
+    {
+        model m;
+        build_devices_(m, tbl);
+        build_versions_(m, tbl);
+        build_browsers_(m, tbl);
+        build_addresses_(m, tbl);
 
         std::vector<double> users;
         for (std::size_t i = 0; i < m.countries.size(); ++i)
@@ -1442,7 +1489,7 @@ class dvg
         return points.back().second;
     }
 
-    const country_row& pick_country_(const device_request& request, const core::rng& call) const
+    [[nodiscard]] const country_row& pick_country_(const device_request& request, const core::rng& call) const
     {
         const auto& m = _model;
         if (request.country)
@@ -1466,9 +1513,9 @@ class dvg
     // The browsers of an OS in a country, with their weights (the country's rows, else the default).
     [[nodiscard]] const weighted_keys* browsers_of_(std::string_view country, std::string_view os) const
     {
-        if (const auto it = _model.browser_shares.find(join_(country, os)); it != _model.browser_shares.end())
+        if (const auto it = _model.browser_shares.find(join_({country, os})); it != _model.browser_shares.end())
             return &it->second;
-        if (const auto it = _model.browser_shares.find(join_("*", os)); it != _model.browser_shares.end())
+        if (const auto it = _model.browser_shares.find(join_({"*", os})); it != _model.browser_shares.end())
             return &it->second;
         return nullptr;
     }
@@ -1476,9 +1523,9 @@ class dvg
     // The makers of a platform in a country (the country's rows, else the default).
     [[nodiscard]] const weighted_keys* makers_of_(std::string_view country, std::string_view platform) const
     {
-        if (const auto it = _model.maker_shares.find(join_(country, platform)); it != _model.maker_shares.end())
+        if (const auto it = _model.maker_shares.find(join_({country, platform})); it != _model.maker_shares.end())
             return &it->second;
-        if (const auto it = _model.maker_shares.find(join_("*", platform)); it != _model.maker_shares.end())
+        if (const auto it = _model.maker_shares.find(join_({"*", platform})); it != _model.maker_shares.end())
             return &it->second;
         return nullptr;
     }
@@ -1498,7 +1545,57 @@ class dvg
                std::ranges::any_of(*makers, [](const auto& m) { return m.first == "Samsung" && m.second > 0.0; });
     }
 
-    const platform_row& pick_platform_(const device_request& request, std::string_view country,
+    // Platform weights in a country: its percentages for the platforms it lists; the others
+    // share the rest by global weight. Zero for platforms the kind or browser rules out.
+    // A platform's percentage in a country's shares, if the country lists it.
+    static const double* share_of_(const weighted_keys* shares, std::string_view key)
+    {
+        if (shares == nullptr) return nullptr;
+        const auto it = std::ranges::find(*shares, key, &std::pair<std::string, double>::first);
+        return it == shares->end() ? nullptr : &it->second;
+    }
+
+    // Platform weights in a country: its percentages for the platforms it lists; the
+    // others share the rest by global weight.
+    [[nodiscard]] std::vector<double> base_platform_weights_(std::string_view country) const
+    {
+        const auto& m = _model;
+        const auto it = m.platform_shares.find(country);
+        const weighted_keys* shares = it == m.platform_shares.end() ? nullptr : &it->second;
+        double listed = 0.0;
+        double rest = 0.0;
+        for (const auto& p : m.platforms)
+        {
+            if (const auto* w = share_of_(shares, p.key)) listed += *w;
+            else rest += p.weight;
+        }
+        const double remaining = std::max(0.0, 100.0 - listed);
+        std::vector<double> weights;
+        weights.reserve(m.platforms.size());
+        for (const auto& p : m.platforms)
+        {
+            if (const auto* o = share_of_(shares, p.key)) weights.push_back(*o);
+            else if (shares == nullptr) weights.push_back(p.weight);
+            else weights.push_back(rest > 0.0 ? core::math::fenced(remaining * p.weight) / rest : 0.0);
+        }
+        return weights;
+    }
+
+    // The country's platform weights, zero for platforms the kind or browser rules out.
+    [[nodiscard]] std::vector<double> platform_weights_(const device_request& request, std::string_view country) const
+    {
+        auto weights = base_platform_weights_(country);
+        for (std::size_t i = 0; i < weights.size(); ++i)
+        {
+            const auto& p = _model.platforms[i];
+            if ((request.kind && kind_of_(p.device) != request.kind) ||
+                (request.browser && !platform_has_browser_(country, p, *request.browser)))
+                weights[i] = 0.0;
+        }
+        return weights;
+    }
+
+    [[nodiscard]] const platform_row& pick_platform_(const device_request& request, std::string_view country,
                                        const core::rng& call) const
     {
         const auto& m = _model;
@@ -1515,35 +1612,7 @@ class dvg
             return *it;
         }
 
-        // Country percentages for the platforms it lists; the others share the rest by global weight.
-        const weighted_keys* shares = nullptr;
-        if (const auto it = m.platform_shares.find(country); it != m.platform_shares.end()) shares = &it->second;
-        const auto override_of = [&](const platform_row& p) -> const double* {
-            if (shares == nullptr) return nullptr;
-            for (const auto& [key, w] : *shares)
-                if (key == p.key) return &w;
-            return nullptr;
-        };
-        double listed = 0.0;
-        double rest = 0.0;
-        for (const auto& p : m.platforms)
-        {
-            if (const auto* w = override_of(p)) listed += *w;
-            else rest += p.weight;
-        }
-        const double remaining = std::max(0.0, 100.0 - listed);
-        std::vector<double> weights;
-        weights.reserve(m.platforms.size());
-        for (const auto& p : m.platforms)
-        {
-            double w = 0.0;
-            if (const auto* o = override_of(p)) w = *o;
-            else if (shares != nullptr) w = rest > 0.0 ? core::math::fenced(remaining * p.weight) / rest : 0.0;
-            else w = p.weight;
-            if (request.kind && kind_of_(p.device) != request.kind) w = 0.0;
-            if (request.browser && !platform_has_browser_(country, p, *request.browser)) w = 0.0;
-            weights.push_back(w);
-        }
+        const auto weights = platform_weights_(request, country);
         if (!any_positive_(weights))
             throw std::invalid_argument("device-generator: no platform matches the kind and browser asked for");
         auto r = call.split("platform");
@@ -1554,7 +1623,7 @@ class dvg
     // data lists no models for that maker and platform (most desktops).
     [[nodiscard]] bool maker_has_model_(std::string_view platform, std::string_view maker, int day) const
     {
-        const auto it = _model.models_by.find(join_(platform, maker));
+        const auto it = _model.models_by.find(join_({platform, maker}));
         if (it == _model.models_by.end()) return true;
         return std::ranges::any_of(it->second, [&](std::size_t i) { return _model.models[i].released <= day; });
     }
@@ -1579,7 +1648,7 @@ class dvg
                                  int day, core::rng& r) const
     {
         const auto& m = _model;
-        const auto it = m.models_by.find(join_(p.key, maker));
+        const auto it = m.models_by.find(join_({p.key, maker}));
         if (it == m.models_by.end()) return nullptr;
         const auto a = adoption_of_("model:" + p.key);
         std::vector<double> w;
@@ -1605,38 +1674,39 @@ class dvg
 
     static bool has_minor_versions_(std::string_view os) { return os == "iOS" || os == "iPadOS"; }
 
-    const release* pick_os_version_(const device_request& request, const platform_row& p, const model_row* mdl,
-                                    int day, const core::rng& call) const
+    // OS version weights at a day, within the model's range unless `respect_model` is false.
+    [[nodiscard]] std::vector<double> os_weights_(const std::vector<release>& list, std::string_view product,
+                                                  const model_row* mdl, int day, bool respect_model) const
     {
-        const auto& m = _model;
-        const auto product = product_of_os_(p.os);
-        const auto it = m.releases.find(product);
-        if (product.empty() || it == m.releases.end()) return nullptr;
-        const auto& list = it->second;
-        const auto shares = m.version_shares.find(product);
-        const auto a = adoption_of_(product);
+        std::vector<bool> allowed;
+        allowed.reserve(list.size());
+        for (const auto& rel : list)
+        {
+            const bool in_range = !respect_model || mdl == nullptr ||
+                                  (compare_(rel.parts, mdl->os_first) >= 0 &&
+                                   (mdl->os_last.empty() || compare_(rel.parts, mdl->os_last) <= 0));
+            allowed.push_back(rel.released <= day && in_range);
+        }
+        const auto shares = _model.version_shares.find(product);
+        if (shares == _model.version_shares.end()) return version_weights_(list, allowed, adoption_of_(product), day);
+        std::vector<double> w(list.size(), 0.0);
+        for (std::size_t i = 0; i < list.size(); ++i)
+        {
+            if (!allowed[i]) continue;
+            const auto v = shares->second.find(list[i].version);
+            w[i] = v == shares->second.end() ? 0.0 : interpolate_(v->second, day);
+        }
+        return w;
+    }
 
-        const auto weights_for = [&](bool respect_model) {
-            std::vector<bool> allowed;
-            allowed.reserve(list.size());
-            for (const auto& rel : list)
-            {
-                allowed.push_back(rel.released <= day &&
-                                  (!respect_model || mdl == nullptr ||
-                                   (compare_(rel.parts, mdl->os_first) >= 0 &&
-                                    (mdl->os_last.empty() || compare_(rel.parts, mdl->os_last) <= 0))));
-            }
-            if (shares == m.version_shares.end()) return version_weights_(list, allowed, a, day);
-            std::vector<double> w(list.size(), 0.0);
-            for (std::size_t i = 0; i < list.size(); ++i)
-            {
-                if (!allowed[i]) continue;
-                const auto v = shares->second.find(list[i].version);
-                w[i] = v == shares->second.end() ? 0.0 : interpolate_(v->second, day);
-            }
-            return w;
-        };
-        auto w = weights_for(true);
+    [[nodiscard]] const release* pick_os_version_(const device_request& request, const platform_row& p,
+                                                  const model_row* mdl, int day, const core::rng& call) const
+    {
+        const auto product = product_of_os_(p.os);
+        const auto it = _model.releases.find(product);
+        if (product.empty() || it == _model.releases.end()) return nullptr;
+        const auto& list = it->second;
+        auto w = os_weights_(list, product, mdl, day, true);
         if (!any_positive_(w))
         {
             // The model's range has no released version with a share: its first version, if released.
@@ -1645,7 +1715,7 @@ class dvg
                 for (const auto& rel : list)
                     if (rel.released <= day && compare_(rel.parts, mdl->os_first) >= 0) return &rel;
             }
-            w = weights_for(false);
+            w = os_weights_(list, product, mdl, day, false);
             if (!any_positive_(w)) return nullptr;
         }
         auto r = call.split("os-version");
@@ -1681,13 +1751,11 @@ class dvg
     [[nodiscard]] bool runs_on_(std::string_view browser, std::string_view os, int browser_major,
                                 const version_parts& os_version) const
     {
-        const auto it = _model.requirements.find(join_(browser, os));
+        const auto it = _model.requirements.find(join_({browser, os}));
         if (it == _model.requirements.end() || os_version.empty()) return true;
-        for (const auto& req : it->second)
-        {
-            if (browser_major >= req.from && compare_(os_version, req.min_os) < 0) return false;
-        }
-        return true;
+        return std::ranges::none_of(it->second, [&](const requirement& req) {
+            return browser_major >= req.from && compare_(os_version, req.min_os) < 0;
+        });
     }
 
     // Whether any version of a browser runs on the OS by the day (browser_versions_
@@ -1723,7 +1791,7 @@ class dvg
         return {&it->second, version_weights_(it->second, allowed, adoption_of_(product), day)};
     }
 
-    browser_pick pick_browser_(const device_request& request, std::string_view country, const platform_row& p,
+    [[nodiscard]] browser_pick pick_browser_(const device_request& request, std::string_view country, const platform_row& p,
                                std::string_view maker, const std::string& os_version, int day,
                                const core::rng& call) const
     {
@@ -1782,13 +1850,12 @@ class dvg
         return v && !v->empty() ? v->front() : 0;
     }
 
-    [[nodiscard]] std::string render_ua_(const device& d, const platform_row& p, const model_row* mdl,
-                                         const release* os_release, const std::string& full) const
+    // The template with the highest (min_browser, min_os) the device reaches.
+    [[nodiscard]] const ua_template* select_template_(std::string_view browser, std::string_view os, int bmaj,
+                                                      int omaj) const
     {
-        const auto it = _model.ua_templates.find(join_(d.browser, p.os));
-        if (it == _model.ua_templates.end()) return {};
-        const int bmaj = major_(d.browser_version);
-        const int omaj = major_(d.os_version);
+        const auto it = _model.ua_templates.find(join_({browser, os}));
+        if (it == _model.ua_templates.end()) return nullptr;
         const ua_template* best = nullptr;
         for (const auto& t : it->second)
         {
@@ -1796,42 +1863,67 @@ class dvg
             if (best == nullptr || std::pair{t.min_browser, t.min_os} > std::pair{best->min_browser, best->min_os})
                 best = &t;
         }
-        if (best == nullptr) return {};
+        return best;
+    }
 
-        std::string os_us = d.os_version;
-        std::ranges::replace(os_us, '.', '_');
-        const std::string model_token = mdl != nullptr && !mdl->ua_model.empty() ? mdl->ua_model : "K";
-        const auto value = [&](std::string_view name) -> std::optional<std::string> {
-            if (name == "os") return d.os_version;
-            if (name == "os_") return os_us;
-            if (name == "os_full") return os_release != nullptr ? os_release->full : std::string{};
-            if (name == "model") return model_token;
-            if (name == "v") return d.browser_version;
-            if (name == "full") return full.empty() ? std::to_string(bmaj) + ".0.0.0" : full;
-            if (name == "mobile") return d.kind == "phone" ? "Mobile " : "";
-            if (name == "form") return d.kind == "phone" ? "Mobile" : "Tablet";
-            return std::nullopt;
-        };
+    // Replace each {name} the lookup knows; leave anything else as written.
+    template <typename Lookup> static std::string fill_template_(const std::string& text, const Lookup& value)
+    {
         std::string out;
-        const std::string& text = best->text;
         for (std::size_t i = 0; i < text.size(); ++i)
         {
-            if (text[i] == '{')
+            const auto close = text[i] == '{' ? text.find('}', i) : std::string::npos;
+            const auto v = close == std::string::npos ? std::nullopt
+                                                      : value(std::string_view{text}.substr(i + 1, close - i - 1));
+            if (v)
             {
-                const auto close = text.find('}', i);
-                if (close != std::string::npos)
-                {
-                    if (const auto v = value(std::string_view{text}.substr(i + 1, close - i - 1)))
-                    {
-                        out += *v;
-                        i = close;
-                        continue;
-                    }
-                }
+                out += *v;
+                i = close;
+                continue;
             }
             out += text[i];
         }
         return out;
+    }
+
+    // What fills a user-agent template.
+    struct ua_context
+    {
+        const device* d{nullptr};
+        std::string os_us;          // the OS version with underscores
+        std::string os_full;        // the OS release's full token (Windows NT version)
+        std::string model_token;
+        std::string full;           // the browser release's full version
+        int browser_major{0};
+    };
+
+    static std::optional<std::string> ua_value_(std::string_view name, const ua_context& c)
+    {
+        if (name == "os") return c.d->os_version;
+        if (name == "os_") return c.os_us;
+        if (name == "os_full") return c.os_full;
+        if (name == "model") return c.model_token;
+        if (name == "v") return c.d->browser_version;
+        if (name == "full") return c.full.empty() ? std::to_string(c.browser_major) + ".0.0.0" : c.full;
+        if (name == "mobile") return c.d->kind == "phone" ? "Mobile " : "";
+        if (name == "form") return c.d->kind == "phone" ? "Mobile" : "Tablet";
+        return std::nullopt;
+    }
+
+    [[nodiscard]] std::string render_ua_(const device& d, const platform_row& p, const model_row* mdl,
+                                         const release* os_release, const std::string& full) const
+    {
+        const int bmaj = major_(d.browser_version);
+        const auto* best = select_template_(d.browser, p.os, bmaj, major_(d.os_version));
+        if (best == nullptr) return {};
+        ua_context c{.d = &d,
+                     .os_us = d.os_version,
+                     .os_full = os_release != nullptr ? os_release->full : std::string{},
+                     .model_token = mdl != nullptr && !mdl->ua_model.empty() ? mdl->ua_model : "K",
+                     .full = full,
+                     .browser_major = bmaj};
+        std::ranges::replace(c.os_us, '.', '_');
+        return fill_template_(best->text, [&](std::string_view name) { return ua_value_(name, c); });
     }
 
     // "pt-BR" -> "pt-BR,pt;q=0.9,en;q=0.8"; "en-US" -> "en-US,en;q=0.9".
@@ -1858,8 +1950,8 @@ class dvg
     {
         if (mdl != nullptr && mdl->screen.width > 0) return mdl->screen;
         const auto& m = _model;
-        auto it = m.screens.find(join_(country, p.os));
-        if (it == m.screens.end()) it = m.screens.find(join_("*", p.os));
+        auto it = m.screens.find(join_({country, p.os}));
+        if (it == m.screens.end()) it = m.screens.find(join_({"*", p.os}));
         if (it == m.screens.end() || it->second.empty()) return {};
         std::vector<double> w;
         w.reserve(it->second.size());
@@ -1875,13 +1967,13 @@ class dvg
     }
 
     // RFC 5952 text: lower case, no leading zeros, the longest run of two or more zero groups as "::".
-    static std::string format_ipv6_(std::uint64_t hi, std::uint64_t lo)
+    static std::string format_ipv6_(const ipv6_net& a)
     {
         std::array<std::uint16_t, 8> g{};
         for (std::size_t i = 0; i < 4; ++i)
         {
-            g.at(i) = static_cast<std::uint16_t>(hi >> (48U - (16U * i)));
-            g.at(i + 4) = static_cast<std::uint16_t>(lo >> (48U - (16U * i)));
+            g.at(i) = static_cast<std::uint16_t>(a.hi >> (48U - (16U * i)));
+            g.at(i + 4) = static_cast<std::uint16_t>(a.lo >> (48U - (16U * i)));
         }
         std::size_t best = 8;
         std::size_t best_len = 1;
@@ -1930,18 +2022,19 @@ class dvg
     }
 
     // An address inside an IPv6 prefix: the prefix bits kept, the rest random.
-    static std::pair<std::uint64_t, std::uint64_t> address_in_v6_(const ipv6_net& n, core::rng& r)
+    static ipv6_net address_in_v6_(const ipv6_net& n, core::rng& r)
     {
-        const auto keep = [](std::uint64_t base, std::uint64_t random, int bits) {
-            if (bits <= 0) return random;
-            if (bits >= 64) return base;
-            const std::uint64_t mask = ~std::uint64_t{0} << (64U - static_cast<unsigned>(bits));
-            return (base & mask) | (random & ~mask);
+        const auto mask_of = [](int bits) -> std::uint64_t {
+            if (bits <= 0) return 0;
+            if (bits >= 64) return ~std::uint64_t{0};
+            return ~std::uint64_t{0} << (64U - static_cast<unsigned>(bits));
         };
-        const std::uint64_t hi = keep(n.hi, r(), n.length);
-        std::uint64_t lo = keep(n.lo, r(), n.length - 64);
-        if (lo == 0) lo = 1;
-        return {hi, lo};
+        const std::uint64_t mask_hi = mask_of(n.length);
+        const std::uint64_t mask_lo = mask_of(n.length - 64);
+        ipv6_net a{.hi = (n.hi & mask_hi) | (r() & ~mask_hi), .lo = 0, .length = 128};
+        a.lo = (n.lo & mask_lo) | (r() & ~mask_lo);
+        if (a.lo == 0) a.lo = 1;
+        return a;
     }
 
     void pick_ip_(const device_request& request, const country_row& country, const core::rng& call, device& d) const
@@ -1963,8 +2056,7 @@ class dvg
             if (use_v6)
             {
                 const auto& n = m.reserved6[core::bounded(r, m.reserved6.size())];
-                const auto [hi, lo] = address_in_v6_(n, r);
-                d.ip = format_ipv6_(hi, lo);
+                d.ip = format_ipv6_(address_in_v6_(n, r));
                 d.ip_version = 6;
                 return;
             }
@@ -1977,13 +2069,14 @@ class dvg
         if (use_v6)
         {
             const auto& set = v6->second;
+            if (!set.by_size) throw std::runtime_error("device-generator: no IPv6 prefixes for " + country.code);
             const auto i = request.weighted ? (*set.by_size)(r) : core::bounded(r, set.nets.size());
-            const auto [hi, lo] = address_in_v6_(set.nets[i], r);
-            d.ip = format_ipv6_(hi, lo);
+            d.ip = format_ipv6_(address_in_v6_(set.nets[i], r));
             d.ip_version = 6;
             return;
         }
         const auto& set = m.ipv4.at(country.code);
+        if (!set.by_size) throw std::runtime_error("device-generator: no IPv4 blocks for " + country.code);
         const auto i = request.weighted ? (*set.by_size)(r) : core::bounded(r, set.start.size());
         d.ip = format_ipv4_(address_in_v4_(set.start[i], set.size[i], r));
         d.ip_version = 4;

@@ -1,3 +1,22 @@
-The data in the resources/ directory is a sample written for this library.
-List each source here with its licence before the first release (see
-doc/data.md).
+device-generator's data, in resources/, comes from these sources.
+
+Derived by the scripts in scripts/ (see doc/data.md for each column):
+
+- IP blocks (ipv4.tsv, ipv6.tsv): the delegated-extended statistics of the
+  five regional internet registries, AFRINIC, APNIC, ARIN, LACNIC and
+  RIPE NCC.
+- Internet users (countries.tsv, internet_share): World Bank, indicator
+  IT.NET.USER.ZS, CC BY 4.0.
+- IPv6 use (countries.tsv, ipv6_share): APNIC Labs IPv6 measurement.
+- Populations (countries.tsv): country-generator, which states its own
+  sources.
+- Release dates (releases.tsv): endoflife.date (MIT), Chromium Dash and
+  Mozilla product-details.
+
+Curated for this library from general knowledge, the vendors' documentation
+and rounded public usage statistics (StatCounter and similar); nothing was
+copied from a dataset, so they are released under the MIT licence of the
+library: platforms, platform shares, maker shares, models, adoption curves,
+version shares, browser requirements, browser shares, user-agent templates,
+screens, and the Samsung Internet rows of releases.tsv. The documentation
+ranges in reserved.tsv are from RFC 5737 and RFC 3849.
