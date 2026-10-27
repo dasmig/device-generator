@@ -166,7 +166,7 @@ In the default `override` mode a row replaces the loaded row with the same key a
 
 ## Compiled-in Data
 
-Define `DASMIG_DEVICE_EMBED` before including the header (or pass `-DDASMIG_DEVICE_EMBED`) to build the `lite` tier into the program from `dasmig/devicegen_data.hpp` (630 KB of source). `load(dataset::lite)` then needs no files, and its output equals the files'. `make embed` regenerates the header after the data changes.
+Define `DASMIG_DEVICE_EMBED` before including the header (or pass `-DDASMIG_DEVICE_EMBED`) to build the `lite` tier into the program from `dasmig/devicegen_data.hpp` (649 KB of source). `load(dataset::lite)` then needs no files, and its output equals the files'. `make embed` regenerates the header after the data changes.
 
 ## Thread Safety
 
