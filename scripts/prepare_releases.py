@@ -20,6 +20,13 @@ Sources:
                                 same major for macOS)
   samsung                       curated from Samsung Internet's release notes
                                 (approximate dates)
+  opera                         Chrome's majors: Opera N is built on Chromium
+                                N + 14 and ships about two weeks after it;
+                                `full` is the Chromium version (curated rule)
+  yandex                        Chrome's majors: Yandex Browser YY.M is built on
+                                the Chromium released that month and ships about
+                                three weeks after it; `full` is the Chromium
+                                version (curated rule)
 
 Only versions released by the end of the data are listed; dates before
 2012 are dropped (the earliest reference date is 2021-01-01, and versions
@@ -125,6 +132,19 @@ def main():
             rows.append(("edge", v, edge_day.isoformat(), ""))
     rows += [("safari", v, d, latest) for p, v, d, latest in rows if p == "ios"]
     rows += [("samsung", v, d, f"{chromium_major}.0.0.0") for v, d, chromium_major in SAMSUNG]
+    newest = max(r[2] for r in rows)  # derived releases after the sources' newest have not happened yet
+    for v, d, full in chrome:
+        day = datetime.date.fromisoformat(d)
+        if int(v) >= 87:  # Opera 73, the first in the window the data covers
+            rows.append(("opera", str(int(v) - 14), (day + datetime.timedelta(days=14)).isoformat(), f"{v}.0.0.0"))
+    yandex = {}
+    for v, d, full in sorted(chrome, key=lambda r: r[1]):
+        day = datetime.date.fromisoformat(d) + datetime.timedelta(days=21)
+        version = f"{day.year % 100}.{day.month}"
+        if day.year >= 2019 and version not in yandex:
+            yandex[version] = (day.isoformat(), full)
+    rows += [("yandex", v, d, full) for v, (d, full) in yandex.items()]
+    rows = [r for r in rows if r[0] not in ("opera", "yandex") or r[2] <= newest]
 
     def sort_key(r):
         return (r[0], r[2], [int(x) if x.isdigit() else 0 for x in r[1].split(".")])

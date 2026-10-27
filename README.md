@@ -24,11 +24,13 @@ Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome
 
 - **Everything Agrees**. The model came out before the reference date, the OS version is one the model runs, the browser runs on that OS version (Chrome 110 and later need Windows 10; Safari only on Apple systems; every iOS browser is WebKit), and versions are those released by the date, with newer ones spreading as they really do.
 
-- **Real User Agents**. Strings follow each browser's format at that version: Chrome's reduced user agent from version 110 on Android (`Android 10; K`), the minor-version zeros from 101, Apple's frozen `18_6` token from iOS 26, `CriOS`, `FxiOS` and `EdgiOS` on iOS, iPad Safari asking for the desktop site. Checked against ua-parser, which reads back the browser, its major version and the OS for every generated string.
+- **Real User Agents**. Strings follow each browser's format at that version: Chrome's reduced user agent from version 110 on Android (`Android 10; K`), the minor-version zeros from 101, Apple's frozen `18_6` token from iOS 26, `CriOS`, `FxiOS` and `EdgiOS` on iOS, iPad Safari asking for the desktop site. Chrome, Safari, Edge, Firefox, Samsung Internet, Opera and Yandex Browser. Checked against ua-parser, which reads back the browser, its major version and the OS for every generated string.
+
+- **Client Hints**. Chrome and Edge also get the `Sec-CH-UA`, `Sec-CH-UA-Mobile` and `Sec-CH-UA-Platform` headers they send with every request, with the brand list ordered and spelled by the version as Chromium does it (`"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`).
 
 - **Real Addresses, or Safe Ones**. IPv4 and IPv6 addresses come from the blocks the five regional registries list for the country, weighted by size, never from special-purpose ranges. `safe` gives documentation addresses only (RFC 5737, RFC 3849), so test data reaches no one.
 
-- **Any Date**. A `reference_date` from 2021 on picks the devices, OS and browser versions of that day; the library never reads the clock.
+- **Any Date**. A `reference_date` from 2021 on picks the devices, OS and browser versions of that day, and maker and browser shares follow their trends (Huawei's fall outside China, Edge's rise on Windows); the library never reads the clock.
 
 - **Ask for What You Need**. A `device_request` can fix the country, the platform (user-generator's keys), the kind, the browser, the IP family and the locale (for `Accept-Language`). What is left out is drawn, and fixing one part leaves the others' draws unchanged.
 

@@ -37,3 +37,9 @@ chrome	Linux	0	0	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like
 chrome	Linux	101	0	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
 firefox	Linux	0	0	Mozilla/5.0 (X11; Linux x86_64; rv:{v}.0) Gecko/20100101 Firefox/{v}.0
 chrome	ChromeOS	0	0	Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{v}.0.0.0 Safari/537.36
+opera	Windows	0	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36 OPR/{v}.0.0.0
+opera	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36 OPR/{v}.0.0.0
+opera	Linux	0	0	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} Safari/537.36 OPR/{v}.0.0.0
+yandex	Windows	0	0	Mozilla/5.0 (Windows NT {os_full}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} YaBrowser/{v}.0.0 Yowser/2.5 Safari/537.36
+yandex	macOS	0	0	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} YaBrowser/{v}.0.0 Yowser/2.5 Safari/537.36
+yandex	Android	0	0	Mozilla/5.0 (Linux; arm_64; Android {os}; {model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{full} YaBrowser/{v}.0.00 SA/3 {mobile}Safari/537.36

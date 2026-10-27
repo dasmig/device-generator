@@ -1,169 +1,218 @@
-# Makers of each platform's devices by country, relative weights. Country * is the default for countries without rows; a country's rows replace it for that platform. Rough estimates rounded from public vendor share statistics (curated); see doc/data.md.
-country	platform	maker	weight
-*	android-phone	Samsung	38
-*	android-phone	Xiaomi	20
-*	android-phone	Oppo	8
-*	android-phone	Vivo	8
-*	android-phone	Huawei	6
-*	android-phone	Realme	5
-*	android-phone	Motorola	5
-*	android-phone	Google	3
-*	android-phone	OnePlus	2
-AR	android-phone	Samsung	50
-AR	android-phone	Motorola	40
-AR	android-phone	Xiaomi	10
-AU	android-phone	Samsung	60
-AU	android-phone	Google	15
-AU	android-phone	Oppo	15
-AU	android-phone	Motorola	5
-AU	android-phone	Xiaomi	5
-BR	android-phone	Samsung	50
-BR	android-phone	Motorola	30
-BR	android-phone	Xiaomi	17
-BR	android-phone	Realme	3
-CA	android-phone	Samsung	60
-CA	android-phone	Google	15
-CA	android-phone	Motorola	15
-CA	android-phone	OnePlus	5
-CA	android-phone	Xiaomi	5
-CN	android-phone	Huawei	30
-CN	android-phone	Xiaomi	25
-CN	android-phone	Vivo	20
-CN	android-phone	Oppo	20
-CN	android-phone	Realme	3
-CN	android-phone	OnePlus	2
-DE	android-phone	Samsung	55
-DE	android-phone	Xiaomi	20
-DE	android-phone	Google	8
-DE	android-phone	Huawei	6
-DE	android-phone	Motorola	5
-DE	android-phone	Oppo	3
-DE	android-phone	OnePlus	3
-EG	android-phone	Samsung	35
-EG	android-phone	Oppo	25
-EG	android-phone	Xiaomi	25
-EG	android-phone	Realme	10
-EG	android-phone	Huawei	5
-ES	android-phone	Samsung	40
-ES	android-phone	Xiaomi	38
-ES	android-phone	Oppo	7
-ES	android-phone	Realme	5
-ES	android-phone	Motorola	4
-ES	android-phone	Huawei	4
-ES	android-phone	Google	2
-FR	android-phone	Samsung	50
-FR	android-phone	Xiaomi	25
-FR	android-phone	Oppo	6
-FR	android-phone	Huawei	6
-FR	android-phone	Google	5
-FR	android-phone	Motorola	4
-FR	android-phone	Realme	4
-GB	android-phone	Samsung	60
-GB	android-phone	Google	15
-GB	android-phone	Xiaomi	10
-GB	android-phone	Motorola	7
-GB	android-phone	OnePlus	4
-GB	android-phone	Oppo	4
-ID	android-phone	Oppo	22
-ID	android-phone	Samsung	22
-ID	android-phone	Xiaomi	22
-ID	android-phone	Vivo	18
-ID	android-phone	Realme	14
-IN	android-phone	Xiaomi	25
-IN	android-phone	Samsung	22
-IN	android-phone	Vivo	20
-IN	android-phone	Realme	14
-IN	android-phone	Oppo	12
-IN	android-phone	OnePlus	4
-IN	android-phone	Motorola	3
-IT	android-phone	Samsung	45
-IT	android-phone	Xiaomi	30
-IT	android-phone	Oppo	7
-IT	android-phone	Huawei	7
-IT	android-phone	Motorola	5
-IT	android-phone	Realme	4
-IT	android-phone	Google	2
-JP	android-phone	Google	45
-JP	android-phone	Samsung	35
-JP	android-phone	Xiaomi	10
-JP	android-phone	Oppo	10
-KR	android-phone	Samsung	95
-KR	android-phone	Google	5
-MX	android-phone	Samsung	35
-MX	android-phone	Motorola	30
-MX	android-phone	Xiaomi	20
-MX	android-phone	Oppo	5
-MX	android-phone	Huawei	5
-MX	android-phone	Realme	5
-NG	android-phone	Samsung	40
-NG	android-phone	Xiaomi	25
-NG	android-phone	Oppo	15
-NG	android-phone	Huawei	10
-NG	android-phone	Realme	10
-PH	android-phone	Samsung	25
-PH	android-phone	Oppo	20
-PH	android-phone	Vivo	20
-PH	android-phone	Realme	20
-PH	android-phone	Xiaomi	15
-PK	android-phone	Samsung	20
-PK	android-phone	Vivo	20
-PK	android-phone	Oppo	20
-PK	android-phone	Xiaomi	20
-PK	android-phone	Realme	15
-PK	android-phone	Huawei	5
-RU	android-phone	Xiaomi	35
-RU	android-phone	Samsung	35
-RU	android-phone	Huawei	15
-RU	android-phone	Realme	8
-RU	android-phone	Vivo	4
-RU	android-phone	Oppo	3
-SA	android-phone	Samsung	50
-SA	android-phone	Huawei	20
-SA	android-phone	Xiaomi	15
-SA	android-phone	Oppo	10
-SA	android-phone	Realme	5
-TH	android-phone	Oppo	25
-TH	android-phone	Samsung	25
-TH	android-phone	Vivo	25
-TH	android-phone	Xiaomi	15
-TH	android-phone	Realme	10
-TR	android-phone	Samsung	45
-TR	android-phone	Xiaomi	35
-TR	android-phone	Oppo	8
-TR	android-phone	Huawei	7
-TR	android-phone	Realme	5
-US	android-phone	Samsung	55
-US	android-phone	Motorola	25
-US	android-phone	Google	15
-US	android-phone	OnePlus	5
-VN	android-phone	Samsung	35
-VN	android-phone	Oppo	30
-VN	android-phone	Xiaomi	15
-VN	android-phone	Vivo	10
-VN	android-phone	Realme	10
-ZA	android-phone	Samsung	60
-ZA	android-phone	Huawei	15
-ZA	android-phone	Xiaomi	10
-ZA	android-phone	Oppo	8
-ZA	android-phone	Motorola	7
-*	android-tablet	Samsung	60
-*	android-tablet	Lenovo	25
-*	android-tablet	Xiaomi	15
-*	windows-desktop	Lenovo	25
-*	windows-desktop	HP	23
-*	windows-desktop	Dell	18
-*	windows-desktop	Asus	12
-*	windows-desktop	Acer	10
-*	windows-desktop	Microsoft	4
-*	windows-desktop	MSI	3
-*	linux-desktop	Lenovo	40
-*	linux-desktop	Dell	35
-*	linux-desktop	HP	25
-*	chromeos-desktop	Acer	30
-*	chromeos-desktop	HP	25
-*	chromeos-desktop	Lenovo	25
-*	chromeos-desktop	Asus	10
-*	chromeos-desktop	Dell	10
-*	ios-phone	Apple	1
-*	ipad	Apple	1
-*	macos-desktop	Apple	1
+# Makers of each platform's devices by country, relative weights as of 2025-01-01; trend is the relative change per year before and after (Huawei -0.25: a quarter fewer each year). Country * is the default for countries without rows; a country's rows replace it for that platform. Rough estimates rounded from public vendor share statistics (curated); see doc/data.md.
+country	platform	maker	weight	trend
+*	android-phone	Samsung	38	
+*	android-phone	Xiaomi	20	0.05
+*	android-phone	Oppo	8	
+*	android-phone	Vivo	8	
+*	android-phone	Huawei	6	-0.25
+*	android-phone	Realme	5	
+*	android-phone	Motorola	5	
+*	android-phone	Google	3	
+*	android-phone	OnePlus	2	
+*	android-phone	Tecno	2	0.1
+*	android-phone	Infinix	2	0.1
+*	android-phone	Honor	2	0.15
+AR	android-phone	Samsung	50	
+AR	android-phone	Motorola	40	
+AR	android-phone	Xiaomi	10	0.05
+AU	android-phone	Samsung	60	
+AU	android-phone	Google	15	
+AU	android-phone	Oppo	15	
+AU	android-phone	Motorola	5	
+AU	android-phone	Xiaomi	5	0.05
+BD	android-phone	Samsung	25	
+BD	android-phone	Xiaomi	20	0.05
+BD	android-phone	Realme	15	
+BD	android-phone	Infinix	10	0.1
+BD	android-phone	Tecno	10	0.1
+BD	android-phone	Vivo	10	
+BD	android-phone	Oppo	10	
+BR	android-phone	Samsung	50	
+BR	android-phone	Motorola	30	
+BR	android-phone	Xiaomi	17	0.05
+BR	android-phone	Realme	3	
+CA	android-phone	Samsung	60	
+CA	android-phone	Google	15	
+CA	android-phone	Motorola	15	
+CA	android-phone	OnePlus	5	
+CA	android-phone	Xiaomi	5	0.05
+CN	android-phone	Huawei	30	0.1
+CN	android-phone	Xiaomi	25	0.05
+CN	android-phone	Vivo	20	
+CN	android-phone	Oppo	20	
+CN	android-phone	Realme	3	
+CN	android-phone	OnePlus	2	
+CN	android-phone	Honor	15	0.15
+DE	android-phone	Samsung	55	
+DE	android-phone	Xiaomi	20	0.05
+DE	android-phone	Google	8	
+DE	android-phone	Huawei	6	-0.25
+DE	android-phone	Motorola	5	
+DE	android-phone	Oppo	3	
+DE	android-phone	OnePlus	3	
+EG	android-phone	Samsung	35	
+EG	android-phone	Oppo	25	
+EG	android-phone	Xiaomi	25	0.05
+EG	android-phone	Realme	10	
+EG	android-phone	Huawei	5	-0.25
+EG	android-phone	Infinix	6	0.1
+EG	android-phone	Honor	5	0.15
+ES	android-phone	Samsung	40	
+ES	android-phone	Xiaomi	38	0.05
+ES	android-phone	Oppo	7	
+ES	android-phone	Realme	5	
+ES	android-phone	Motorola	4	
+ES	android-phone	Huawei	4	-0.25
+ES	android-phone	Google	2	
+FR	android-phone	Samsung	50	
+FR	android-phone	Xiaomi	25	0.05
+FR	android-phone	Oppo	6	
+FR	android-phone	Huawei	6	-0.25
+FR	android-phone	Google	5	
+FR	android-phone	Motorola	4	
+FR	android-phone	Realme	4	
+GB	android-phone	Samsung	60	
+GB	android-phone	Google	15	
+GB	android-phone	Xiaomi	10	0.05
+GB	android-phone	Motorola	7	
+GB	android-phone	OnePlus	4	
+GB	android-phone	Oppo	4	
+GH	android-phone	Tecno	30	0.1
+GH	android-phone	Samsung	25	
+GH	android-phone	Infinix	20	0.1
+GH	android-phone	Xiaomi	10	0.05
+GH	android-phone	Huawei	5	-0.25
+GH	android-phone	Oppo	5	
+GH	android-phone	Vivo	5	
+ID	android-phone	Oppo	22	
+ID	android-phone	Samsung	22	
+ID	android-phone	Xiaomi	22	0.05
+ID	android-phone	Vivo	18	
+ID	android-phone	Realme	14	
+IN	android-phone	Xiaomi	25	0.05
+IN	android-phone	Samsung	22	
+IN	android-phone	Vivo	20	
+IN	android-phone	Realme	14	
+IN	android-phone	Oppo	12	
+IN	android-phone	OnePlus	4	
+IN	android-phone	Motorola	3	
+IN	android-phone	Infinix	2	0.1
+IT	android-phone	Samsung	45	
+IT	android-phone	Xiaomi	30	0.05
+IT	android-phone	Oppo	7	
+IT	android-phone	Huawei	7	-0.25
+IT	android-phone	Motorola	5	
+IT	android-phone	Realme	4	
+IT	android-phone	Google	2	
+JP	android-phone	Google	45	
+JP	android-phone	Samsung	35	
+JP	android-phone	Xiaomi	10	0.05
+JP	android-phone	Oppo	10	
+KE	android-phone	Samsung	25	
+KE	android-phone	Tecno	25	0.1
+KE	android-phone	Infinix	20	0.1
+KE	android-phone	Xiaomi	10	0.05
+KE	android-phone	Oppo	10	
+KE	android-phone	Huawei	5	-0.25
+KE	android-phone	Vivo	5	
+KR	android-phone	Samsung	95	
+KR	android-phone	Google	5	
+MX	android-phone	Samsung	35	
+MX	android-phone	Motorola	30	
+MX	android-phone	Xiaomi	20	0.05
+MX	android-phone	Oppo	5	
+MX	android-phone	Huawei	5	-0.25
+MX	android-phone	Realme	5	
+NG	android-phone	Tecno	28	0.1
+NG	android-phone	Infinix	22	0.1
+NG	android-phone	Samsung	22	
+NG	android-phone	Xiaomi	10	0.05
+NG	android-phone	Oppo	6	
+NG	android-phone	Huawei	4	-0.25
+PH	android-phone	Samsung	25	
+PH	android-phone	Oppo	20	
+PH	android-phone	Vivo	20	
+PH	android-phone	Realme	20	
+PH	android-phone	Xiaomi	15	0.05
+PK	android-phone	Samsung	20	
+PK	android-phone	Vivo	20	
+PK	android-phone	Oppo	20	
+PK	android-phone	Xiaomi	20	0.05
+PK	android-phone	Realme	15	
+PK	android-phone	Huawei	5	-0.25
+PK	android-phone	Infinix	10	0.1
+PK	android-phone	Tecno	8	0.1
+RU	android-phone	Xiaomi	35	0.05
+RU	android-phone	Samsung	35	
+RU	android-phone	Huawei	15	-0.25
+RU	android-phone	Realme	8	
+RU	android-phone	Vivo	4	
+RU	android-phone	Oppo	3	
+RU	android-phone	Honor	8	0.15
+RU	android-phone	Tecno	5	0.1
+RU	android-phone	Infinix	3	0.1
+SA	android-phone	Samsung	50	
+SA	android-phone	Huawei	20	-0.25
+SA	android-phone	Xiaomi	15	0.05
+SA	android-phone	Oppo	10	
+SA	android-phone	Realme	5	
+SA	android-phone	Honor	8	0.15
+TH	android-phone	Oppo	25	
+TH	android-phone	Samsung	25	
+TH	android-phone	Vivo	25	
+TH	android-phone	Xiaomi	15	0.05
+TH	android-phone	Realme	10	
+TR	android-phone	Samsung	45	
+TR	android-phone	Xiaomi	35	0.05
+TR	android-phone	Oppo	8	
+TR	android-phone	Huawei	7	-0.25
+TR	android-phone	Realme	5	
+TZ	android-phone	Tecno	30	0.1
+TZ	android-phone	Samsung	25	
+TZ	android-phone	Infinix	20	0.1
+TZ	android-phone	Xiaomi	10	0.05
+TZ	android-phone	Huawei	5	-0.25
+TZ	android-phone	Oppo	5	
+TZ	android-phone	Vivo	5	
+UG	android-phone	Tecno	30	0.1
+UG	android-phone	Samsung	25	
+UG	android-phone	Infinix	20	0.1
+UG	android-phone	Xiaomi	10	0.05
+UG	android-phone	Huawei	5	-0.25
+UG	android-phone	Oppo	5	
+UG	android-phone	Vivo	5	
+US	android-phone	Samsung	55	
+US	android-phone	Motorola	25	
+US	android-phone	Google	15	
+US	android-phone	OnePlus	5	
+VN	android-phone	Samsung	35	
+VN	android-phone	Oppo	30	
+VN	android-phone	Xiaomi	15	0.05
+VN	android-phone	Vivo	10	
+VN	android-phone	Realme	10	
+ZA	android-phone	Samsung	60	
+ZA	android-phone	Huawei	15	-0.25
+ZA	android-phone	Xiaomi	10	0.05
+ZA	android-phone	Oppo	8	
+ZA	android-phone	Motorola	7	
+*	android-tablet	Samsung	60	
+*	android-tablet	Lenovo	25	
+*	android-tablet	Xiaomi	15	
+*	chromeos-desktop	Acer	30	
+*	chromeos-desktop	HP	25	
+*	chromeos-desktop	Lenovo	25	
+*	chromeos-desktop	Asus	10	
+*	chromeos-desktop	Dell	10	
+*	ios-phone	Apple	1	
+*	ipad	Apple	1	
+*	linux-desktop	Lenovo	40	
+*	linux-desktop	Dell	35	
+*	linux-desktop	HP	25	
+*	macos-desktop	Apple	1	
+*	windows-desktop	Lenovo	25	
+*	windows-desktop	HP	23	
+*	windows-desktop	Dell	18	
+*	windows-desktop	Asus	12	
+*	windows-desktop	Acer	10	
+*	windows-desktop	Microsoft	4	
+*	windows-desktop	MSI	3	

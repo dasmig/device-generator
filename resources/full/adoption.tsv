@@ -10,6 +10,8 @@ edge	14	21
 firefox	14	25
 samsung	60	90
 safari	45	150
+opera	14	25
+yandex	14	30
 model:ios-phone	90	900
 model:ipad	120	1100
 model:android-phone	90	700

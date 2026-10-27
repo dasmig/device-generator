@@ -142,3 +142,41 @@ galaxy-tab-s8	Samsung	android-tablet	Galaxy Tab S8	2022-02-25	12	15	800	1280	2	S
 galaxy-tab-a9	Samsung	android-tablet	Galaxy Tab A9	2023-10-01	13		800	1340	1.5	SM-X110	5
 lenovo-tab-m10	Lenovo	android-tablet	Tab M10 FHD Plus	2020-03-01	9	10	800	1280	1.5	Lenovo TB-X606F	5
 xiaomi-pad-5	Xiaomi	android-tablet	Xiaomi Pad 5	2021-09-27	11	13	800	1280	2	21051182G	4
+galaxy-s7	Samsung	android-phone	Galaxy S7	2016-03-11	6	8	360	640	4	SM-G930F	3
+galaxy-j7-prime	Samsung	android-phone	Galaxy J7 Prime	2016-09-01	6	8	360	640	3	SM-G610F	4
+galaxy-s8	Samsung	android-phone	Galaxy S8	2017-04-21	7	9	360	740	3	SM-G950F	4
+galaxy-s9	Samsung	android-phone	Galaxy S9	2018-03-16	8	10	360	740	3	SM-G960F	4
+galaxy-j6	Samsung	android-phone	Galaxy J6	2018-05-22	8	10	360	740	2	SM-J600F	3
+galaxy-a50	Samsung	android-phone	Galaxy A50	2019-03-18	9	11	412	892	2.625	SM-A505F	6
+galaxy-a20	Samsung	android-phone	Galaxy A20	2019-04-01	9	11	360	780	2	SM-A205F	4
+galaxy-a10s	Samsung	android-phone	Galaxy A10s	2019-08-01	9	11	360	760	2	SM-A107F	4
+redmi-note-5	Xiaomi	android-phone	Redmi Note 5	2018-03-01	8	9	393	786	2.75	Redmi Note 5	3
+redmi-6a	Xiaomi	android-phone	Redmi 6A	2018-06-01	8	9	360	720	2	Redmi 6A	3
+redmi-note-7	Xiaomi	android-phone	Redmi Note 7	2019-02-01	9	10	393	851	2.75	Redmi Note 7	5
+redmi-8	Xiaomi	android-phone	Redmi 8	2019-10-01	9	10	360	760	2	Redmi 8	4
+huawei-p20-lite	Huawei	android-phone	P20 lite	2018-04-01	8	9	360	760	3	ANE-LX1	3
+huawei-p-smart-2019	Huawei	android-phone	P smart 2019	2019-01-01	9	10	360	780	3	POT-LX1	3
+huawei-y6-2019	Huawei	android-phone	Y6 2019	2019-03-01	9	9	360	720	2	MRD-LX1	3
+moto-g6	Motorola	android-phone	moto g6	2018-04-19	8	9	360	720	3	moto g(6)	3
+moto-g7-power	Motorola	android-phone	moto g7 power	2019-02-07	9	10	360	760	2	moto g(7) power	3
+pixel-3	Google	android-phone	Pixel 3	2018-10-18	9	12	412	824	2.625	Pixel 3	2
+pixel-3a	Google	android-phone	Pixel 3a	2019-05-07	9	12	393	808	2.75	Pixel 3a	2
+oppo-a5s	Oppo	android-phone	A5s	2019-03-01	8	9	360	760	2	CPH1909	4
+vivo-y91c	Vivo	android-phone	Y91C	2019-03-01	8	9	360	760	2	vivo 1820	3
+realme-c2	Realme	android-phone	C2	2019-04-01	9	10	360	760	2	RMX1941	3
+tecno-spark-7	Tecno	android-phone	Spark 7	2021-04-01	11	11	360	800	2	TECNO KF6	5
+tecno-pop-7	Tecno	android-phone	Pop 7	2023-02-01	12	12	360	800	2	TECNO BF6	5
+tecno-spark-10	Tecno	android-phone	Spark 10	2023-03-01	13	13	360	800	2	TECNO KI5k	5
+tecno-camon-20	Tecno	android-phone	Camon 20	2023-05-01	13	14	412	915	2.625	TECNO CK6	3
+tecno-spark-go-2024	Tecno	android-phone	Spark Go 2024	2023-12-01	13	13	360	800	2	TECNO BG6	4
+infinix-hot-10	Infinix	android-phone	Hot 10	2020-09-01	10	11	360	800	2	Infinix X682B	4
+infinix-hot-12	Infinix	android-phone	Hot 12	2022-05-01	11	12	360	800	2	Infinix X6817	4
+infinix-smart-7	Infinix	android-phone	Smart 7	2023-02-01	12	12	360	800	2	Infinix X6515	5
+infinix-hot-30	Infinix	android-phone	Hot 30	2023-05-01	13	14	412	915	2.625	Infinix X6831	4
+infinix-hot-40i	Infinix	android-phone	Hot 40i	2023-12-01	13	14	360	800	2	Infinix X6528	4
+honor-50	Honor	android-phone	Honor 50	2021-06-01	11	13	412	915	2.625	NTH-NX9	2
+honor-x8	Honor	android-phone	Honor X8	2022-03-01	11	13	412	915	2.625	TFY-LX1	4
+honor-x6	Honor	android-phone	Honor X6	2022-10-01	12	13	360	800	2	VNE-LX1	3
+honor-x7a	Honor	android-phone	Honor X7a	2023-01-01	12	13	360	800	2	RKY-LX1	4
+honor-magic5-lite	Honor	android-phone	Magic5 Lite	2023-02-01	12	14	412	915	2.625	RMO-NX1	3
+honor-90-lite	Honor	android-phone	Honor 90 Lite	2023-07-01	13	14	412	915	2.625	CRT-NX1	3

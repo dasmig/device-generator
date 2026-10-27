@@ -9,7 +9,7 @@ The data in `resources/` and how device-generator uses it (rule 6 of the dasmig 
 | `lite` | 195 sovereign states (country-generator's `lite`) | the 64 largest IPv4 blocks and the 64 largest IPv6 prefixes per country: 9,301 and 7,156 rows | the same as `full` |
 | `full` | 245 inhabited territories (country-generator's `full`) | every registered block: 145,071 IPv4 blocks and 69,734 IPv6 prefixes | |
 
-`lite` is compiled in with `DASMIG_DEVICE_EMBED` (631 KB of source). The 64-block cap keeps the whole allocated IPv4 space for the median country; the most fragmented country keeps 30% of it. `full` loads in about 0.2 s.
+`lite` is compiled in with `DASMIG_DEVICE_EMBED` (649 KB of source). The 64-block cap keeps the whole allocated IPv4 space for the median country; the most fragmented country keeps 30% of it. `full` loads in about 0.2 s.
 
 ## Tables
 
@@ -33,15 +33,15 @@ The same keys, labels, global weights and per-country percentages as user-genera
 
 ### `maker_shares.tsv`: makers, curated
 
-Keyed by `country`, `platform`, `maker`; `weight` is relative. World rows for every platform with makers (Android phones and tablets, Windows, Linux and ChromeOS computers; Apple for its own platforms) and country rows for the Android phone makers of 26 large markets. Rough estimates rounded from public vendor share statistics (StatCounter and similar). Makers without models in `models.tsv` are not listed, which leaves out Tecno, Infinix, Honor, Sharp, Sony and LG; markets where they are large (Nigeria, Japan) are the least faithful.
+Keyed by `country`, `platform`, `maker`; `weight` is relative, as of 2025-01-01, and the optional `trend` is the relative change per year before and after it (the weight at a date is `weight × (1 + trend)^years`). World rows for every platform with makers (Android phones and tablets, Windows, Linux and ChromeOS computers; Apple for its own platforms) and country rows for the Android phone makers of 31 markets, including Nigeria, Kenya, Ghana, Tanzania, Uganda and Bangladesh, where Tecno and Infinix are large. Trends: Huawei -25% a year outside China (+10% in China), Honor +15%, Tecno and Infinix +10%, Xiaomi +5%. Rough estimates rounded from public vendor share statistics (StatCounter and similar). Sharp, Sony, LG and itel are not modelled, so Japan is the least faithful market.
 
 ### `models.tsv`: device models, curated
 
-Keyed by `key`: `maker`, `platform`, `model` (display name), `released` (first sale), `os_first` and `os_last` (the OS majors it runs; `os_last` empty means still updated), `width`, `height`, `pixel_ratio` (the screen in CSS pixels, portrait; 0 for a computer without its own screen) and `ua_model` (the model token its user agent sends where the browser sends one), `weight` (relative popularity). 142 models: 41 iPhones, 14 iPads, 15 Macs, 65 Android phones and 7 Android tablets.
+Keyed by `key`: `maker`, `platform`, `model` (display name), `released` (first sale), `os_first` and `os_last` (the OS majors it runs; `os_last` empty means still updated), `width`, `height`, `pixel_ratio` (the screen in CSS pixels, portrait; 0 for a computer without its own screen) and `ua_model` (the model token its user agent sends where the browser sends one), `weight` (relative popularity). 180 models: 41 iPhones, 14 iPads, 15 Macs, 103 Android phones (from 2016) and 7 Android tablets.
 
 - Release dates and OS ranges: from the makers' announcements and support pages, as known in mid-2026. Which iPhones get iOS 27 (September 2026) was not known when the data was written; models with an empty `os_last` are assumed to get it.
 - Screens: CSS viewports of the default display settings; for iPhones and iPads they are exact, for Android phones they are rounded to the common 360, 393 and 412 point widths.
-- Model tokens: Samsung, Google, Motorola, Huawei and OnePlus tokens are the models' build names. Xiaomi tokens are a mix of build codes (`M2101K6G`) and marketing names, as the phones themselves send. The Oppo, Vivo and Realme tokens follow the makers' code patterns (`CPH`, `V`, `RMX`) but the mapping from a code to a model name is approximate.
+- Model tokens: Samsung, Google, Motorola, Huawei and OnePlus tokens are the models' build names. Xiaomi tokens are a mix of build codes (`M2101K6G`) and marketing names, as the phones themselves send. The Oppo, Vivo, Realme, Tecno, Infinix and Honor tokens follow the makers' code patterns (`CPH`, `V`, `RMX`, `TECNO`, `Infinix X`, `XXX-LX1`) but the mapping from a code to a model name is approximate.
 - Popularity: rough relative sales within a maker.
 
 ### `releases.tsv`: OS and browser versions, derived
@@ -57,6 +57,8 @@ Keyed by `product` and `version`: `released` (first stable release) and `full` (
 | `edge` | Chrome's majors from 79 (the first Chromium-based Edge), three days after Chrome's: Edge follows Chrome's schedule; the exact days differ by a few |
 | `safari` | the iOS majors and dates: Safari ships with each iOS and the same major comes to macOS |
 | `samsung` | curated: Samsung Internet 12 to 29 with approximate release months and their Chromium majors, from the release notes |
+| `opera` | from Chrome's: Opera N is built on Chromium N + 14 and ships about two weeks after it (a curated rule; the offset has drifted by a version at times) |
+| `yandex` | from Chrome's: Yandex Browser YY.M is built on the Chromium released that month and ships about three weeks after it (a curated rule) |
 
 The newest release in the data is its "as of" date (2026-10-27): a reference date after it is seen as that date.
 
@@ -83,7 +85,7 @@ Keyed by `os`, `os_version`, `browser`: `min_browser`. On that OS version the br
 
 ### `browser_shares.tsv`: browsers, curated
 
-Keyed by `country`, `os`, `browser`: `weight`. World rows per OS and country rows for South Korean Android and German Windows. Rounded from StatCounter's browser shares by platform. Samsung Internet is only drawn on Samsung devices (about a sixth of their users with the shipped weights). Opera, Yandex, UC Browser, QQ Browser and the makers' own Chinese browsers are left out, so Russia and China are the least faithful.
+Keyed by `country`, `os`, `browser`: `weight`, as of 2025-01-01, and an optional yearly `trend` as in `maker_shares.tsv` (Edge on Windows +6%, Firefox -8% on desktops, Samsung Internet -3%, Chrome on iOS +3%, Opera -3%). World rows per OS and country rows for South Korean Android, German Windows, and Russia, Belarus and Kazakhstan (Yandex Browser). Rounded from StatCounter's browser shares by platform. Samsung Internet is only drawn on Samsung devices (about a sixth of their users with the shipped weights). A requested browser narrows the country and platform draws to those that have it. UC Browser, QQ Browser and the makers' own Chinese browsers are left out, so China is the least faithful.
 
 ### `ua_templates.tsv`: user-agent formats, curated
 
@@ -94,6 +96,8 @@ Keyed by `browser`, `os`, `min_browser`, `min_os`: `template`. The row used is t
 - Samsung Internet: the model token with a `SAMSUNG` prefix before version 20, the reduced form from 20 (approximate version).
 - Safari on iOS: `Version/` is the iOS version; from iOS 26 the OS token is frozen at `18_6`. Every iOS browser has the same frozen token. iPad Safari sends the Mac desktop string from iPadOS 13, and the iPad string before.
 - Firefox: `rv:` and `Firefox/` with the major, `Intel Mac OS X 10.15` on Macs, `FxiOS/` on iOS.
+- Opera: Chrome's desktop format with its Chromium version and `OPR/`. Yandex Browser: its Chromium build and `YaBrowser/` with `Yowser/2.5` on desktops, and the unreduced `arm_64; Android {os}; {model}` form with `SA/3` on Android, as its real strings have.
+- Chrome on iPad sends the iPad string at every version; whether recent versions ask for the desktop site, as Safari does, is not verified.
 
 ### `screens.tsv`: screens without a model, curated
 
@@ -113,6 +117,10 @@ Without them the United States has 1,134 million addresses instead of 1,606 mill
 
 Keyed by `version` and `prefix`: `length`. RFC 5737 (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`) and RFC 3849 (`2001:db8::/32`); the only addresses a `safe` device gets.
 
+### Client hints
+
+Chrome and Edge from version 96, outside iOS, get the three low-entropy client hints they send with every request. `Sec-CH-UA` lists a "GREASE" brand, `Chromium` and the browser (`Google Chrome`, `Microsoft Edge`) with the major version; from 103 the three are ordered by one of six permutations chosen by the major version, and from 105 the GREASE brand is `Not?A?Brand` with two characters and a version (8, 99 or 24) chosen by it, as in Chromium's `GenerateBrandVersionList`. Versions 96 to 102 and 104 use `" Not A;Brand";v="99"`, 103 `".Not/A)Brand";v="99"`. The tests check the headers of Chrome 103, 104, 105, 106, 108, 110, 120 and 124 against real ones. Samsung Internet, Opera and Yandex Browser send client hints too, but their brand lists are not modelled, so they get none, and neither does Chrome before 96.
+
 ## Generation Model
 
 Each step draws from its own stream split from the call seed, so a step fixed by the request leaves the others unchanged.
@@ -121,16 +129,16 @@ Each step draws from its own stream split from the call seed, so a step fixed by
 2. **Platform** (`"platform"`): the request's, else by the country's platform shares, among the platforms the requested kind and browser allow.
 3. **Maker and model** (`"model"`): a maker by the country's shares among those with a model out by the date (Samsung only, when Samsung Internet is asked for), then a model of that maker by popularity and age. Platforms without models (Windows, Linux, ChromeOS) have a maker and no model.
 4. **OS version** (`"os-version"`, `"os-minor"`): among the versions released by the date that the model runs, by `version_shares.tsv` or the adoption curve. iOS and iPadOS add a minor version: the newest one out by the date (about one every 45 days, up to the last known), or one to a few older with falling chance.
-5. **Browser** (`"browser"`): by the OS's shares in the country, among browsers with a version that runs on that OS version by the date.
+5. **Browser** (`"browser"`): by the OS's shares in the country at the date (with trends), among browsers with a version that runs on that OS version by the date.
 6. **Browser version** (`"browser-version"`): among the versions released by the date that run on the OS and are no older than the one it ships with, by the adoption curve. Safari on iOS is the iOS version; Safari on macOS adds a minor version like iOS.
-7. **User agent**: rendered from the template; `Accept-Language` from the requested locale (`pt-BR,pt;q=0.9,en;q=0.8`).
+7. **User agent and client hints**: rendered from the template; client hints for Chrome and Edge; `Accept-Language` from the requested locale (`pt-BR,pt;q=0.9,en;q=0.8`).
 8. **Screen** (`"screen"`): the model's, else by `screens.tsv`.
 9. **IP** (`"ip-version"`, `"ip"`): IPv6 with the country's IPv6 share (or as requested), then a block by size and an address inside it, avoiding `.0` and `.255` in IPv4; IPv6 keeps the prefix and draws the rest. `safe` draws from `reserved.tsv` instead.
 
 ## Checks
 
 - The tests draw thousands of devices at six dates from 2021 to 2031 and check that every part agrees with the others and with the date, and that every address is inside the country's blocks.
-- `scripts/validate_user_agents.py` parses 80,000 generated user agents with ua-parser (uap-core). On the shipped data it reads back the browser family, its major version and the OS family for 100% of them, and the device maker for 84% of the strings that carry a model token. The misses are ua-parser's: it does not map Xiaomi's code tokens or Vivo's `V` codes to a brand, and files Realme's `RMX` codes under Oppo.
+- `scripts/validate_user_agents.py` parses 80,000 generated user agents with ua-parser (uap-core). On the shipped data it reads back the browser family, its major version and the OS family for 100% of them, (Opera and Yandex Browser included), and the device maker for 87% of the strings that carry a model token. The misses are ua-parser's: it does not map Xiaomi's code tokens or Vivo's `V` codes to a brand, and files Realme's `RMX` codes under Oppo.
 
 ## Rebuilding the Data
 
@@ -145,8 +153,8 @@ Downloads are kept in `raw_data/` (not in the repository) and reused; `--refresh
 
 ## Known Limitations
 
-- **Today's shares at every date.** The platform, maker, browser and IPv6 shares are recent; a 2021 device is drawn with 2025 to 2026 shares (only versions and models change with the date).
-- **Old devices are scarce.** The models start in 2015 to 2019, so Android 9 and older are rarer than they were (2% at mid-2023 against about 8%).
-- **Missing makers and browsers.** Tecno, Infinix, Honor, Sharp, Sony and LG phones, Amazon tablets, Opera, Yandex, UC Browser and the Chinese makers' browsers are not modelled.
+- **Trends are simple.** Maker and browser shares change by a constant yearly rate from their 2025 values; platform and IPv6 shares do not change with the date.
+- **Missing makers and browsers.** Sharp, Sony, LG and itel phones, Amazon tablets, UC Browser and the Chinese makers' browsers are not modelled.
+- **Client hints** are modelled for Chrome and Edge only (see above).
 - **Approximations.** Samsung Internet's release months, the Android and iOS browser requirements, Edge's release days and the pre-2022 desktop user-agent tokens are approximate.
-- **Not modelled.** Client hints (`Sec-CH-UA-*`, planned for 1.1), in-app browsers and WebViews, bots and crawlers, smart TVs, consoles and wearables, the network operator of an address, and hardware identifiers (IMEI, MAC), which are left out on purpose.
+- **Not modelled.** High-entropy client hints (`Sec-CH-UA-Full-Version-List` and the like, sent only when a site asks), in-app browsers and WebViews, bots and crawlers, smart TVs, consoles and wearables, the network operator of an address, and hardware identifiers (IMEI, MAC), which are left out on purpose.
