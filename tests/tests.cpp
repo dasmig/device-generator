@@ -384,6 +384,8 @@ TEST_CASE("devices are coherent at every date", "[coherence]")
                 REQUIRE((ua.find("Firefox/") != std::string::npos || ua.find("FxiOS/") != std::string::npos));
             if (d.browser == "edge") REQUIRE(ua.find("Edg") != std::string::npos);
             if (d.browser == "samsung") REQUIRE(ua.find("SamsungBrowser/") != std::string::npos);
+            if (d.browser == "opera") REQUIRE(ua.find(" OPR/") != std::string::npos);
+            if (d.browser == "yandex") REQUIRE(ua.find(" YaBrowser/") != std::string::npos);
             if (d.browser == "safari") REQUIRE(ua.find("Version/" + d.browser_version) != std::string::npos);
             if (d.os == "Android" && (d.browser == "chrome" || d.browser == "edge"))
             {
@@ -488,6 +490,111 @@ TEST_CASE("iPads ask for the desktop site from iPadOS 13", "[coherence]")
         }
     }
     REQUIRE(before_13 > 0);
+}
+
+TEST_CASE("client hints match what Chrome sends", "[coherence][hints]")
+{
+    // Sec-CH-UA as real Chrome releases on Windows send it.
+    const std::map<int, std::string> expected{
+        {103, R"(".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103")"},
+        {104, R"("Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104")"},
+        {105, R"("Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105")"},
+        {106, R"("Chromium";v="106", "Google Chrome";v="106", "Not;A=Brand";v="99")"},
+        {108, R"("Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108")"},
+        {110, R"("Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110")"},
+        {120, R"("Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120")"},
+        {124, R"("Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99")"},
+    };
+    const auto gen = make_loaded_generator();
+    std::set<int> seen;
+    for (const auto date : {year{2022} / 7 / 15, year{2022} / 8 / 20, year{2022} / 9 / 20, year{2022} / 10 / 20,
+                            year{2022} / 12 / 20, year{2023} / 2 / 20, year{2024} / 1 / 5, year{2024} / 5 / 5})
+    {
+        dasmig::device_request r = at(date);
+        r.platform = "windows-desktop";
+        r.browser = "chrome";
+        for (std::uint64_t s = 0; s < 400; ++s)
+        {
+            const auto d = gen.get_device(r, s);
+            const auto it = expected.find(major_of(d.browser_version));
+            if (it == expected.end()) continue;
+            seen.insert(it->first);
+            REQUIRE(d.sec_ch_ua == it->second);
+            REQUIRE(d.sec_ch_ua_mobile == "?0");
+            REQUIRE(d.sec_ch_ua_platform == R"("Windows")");
+        }
+    }
+    REQUIRE(seen.size() == expected.size());
+}
+
+TEST_CASE("client hints are sent by Chromium browsers only", "[coherence][hints]")
+{
+    const auto gen = make_loaded_generator();
+    for (std::uint64_t s = 0; s < 4000; ++s)
+    {
+        const auto d = gen.get_device(at(year{2025} / 3 / 1), s);
+        const bool sends = (d.browser == "chrome" || d.browser == "edge") && d.os != "iOS" && d.os != "iPadOS";
+        INFO(d.to_json());
+        REQUIRE(d.sec_ch_ua.empty() != sends);
+        if (!sends) continue;
+        REQUIRE(d.sec_ch_ua_mobile == (d.kind == "phone" ? "?1" : "?0"));
+        REQUIRE(d.sec_ch_ua_platform == "\"" + (d.os == "ChromeOS" ? std::string{"Chrome OS"} : d.os) + "\"");
+        REQUIRE(d.sec_ch_ua.find(d.browser == "edge" ? "\"Microsoft Edge\"" : "\"Google Chrome\"") != std::string::npos);
+    }
+}
+
+TEST_CASE("shares follow their trends over the years", "[stats]")
+{
+    const auto gen = make_loaded_generator();
+    const auto huawei_share = [&](year_month_day date) {
+        dasmig::device_request r = at(date);
+        r.country = "DE";
+        r.platform = "android-phone";
+        int n = 0;
+        for (std::uint64_t s = 0; s < 4000; ++s) n += gen.get_device(r, s).maker == "Huawei" ? 1 : 0;
+        return n;
+    };
+    REQUIRE(huawei_share(year{2021} / 6 / 1) > 2 * huawei_share(year{2025} / 6 / 1));
+
+    const auto edge_share = [&](year_month_day date) {
+        dasmig::device_request r = at(date);
+        r.platform = "windows-desktop";
+        int n = 0;
+        for (std::uint64_t s = 0; s < 4000; ++s) n += gen.get_device(r, s).browser == "edge" ? 1 : 0;
+        return n;
+    };
+    REQUIRE(edge_share(year{2026} / 6 / 1) > edge_share(year{2021} / 6 / 1));
+}
+
+TEST_CASE("Opera and Yandex Browser", "[coherence]")
+{
+    const auto gen = make_loaded_generator();
+    dasmig::device_request r = at(year{2025} / 3 / 1);
+    r.browser = "yandex";
+    for (std::uint64_t s = 0; s < 500; ++s)
+    {
+        const auto d = gen.get_device(r, s);
+        REQUIRE((d.country_code == "RU" || d.country_code == "BY" || d.country_code == "KZ"));
+        REQUIRE(d.user_agent.find("YaBrowser/" + d.browser_version + ".0") != std::string::npos);
+    }
+    r = at(year{2026} / 1 / 1);
+    r.browser = "opera";
+    r.platform = "windows-desktop";
+    int seven = 0;
+    for (std::uint64_t s = 0; s < 3000; ++s)
+    {
+        const auto d = gen.get_device(r, s);
+        REQUIRE(d.user_agent.ends_with(" OPR/" + d.browser_version + ".0.0.0"));
+        // Opera N is built on Chromium N + 14.
+        REQUIRE(d.user_agent.find("Chrome/" + std::to_string(major_of(d.browser_version) + 14) + ".0.0.0") !=
+                std::string::npos);
+        if (d.os_version == "7")
+        {
+            ++seven;
+            REQUIRE(major_of(d.browser_version) <= 95); // Opera 96 needs Windows 10, like Chromium 110
+        }
+    }
+    REQUIRE(seven > 0);
 }
 
 TEST_CASE("models only run OS versions they support", "[coherence]")
@@ -750,20 +857,20 @@ TEST_CASE("known answers for fixed seeds", "[kat]")
     dasmig::dvg gen;
     gen.load(lite_dir());
     REQUIRE(gen.has_data());
-    REQUIRE(gen.data_hash() == 0xe3458dfd171ee57aULL);
+    REQUIRE(gen.data_hash() == 0xc9d3e7931dda7213ULL);
 
     REQUIRE(gen.get_device({}, std::uint64_t{1}).to_json() ==
-            R"({"country_code":"DE","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 11","os":"iOS","os_version":"16.5","browser":"safari","browser_version":"16.5","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1","accept_language":"","screen":{"width":414,"height":896,"pixel_ratio":2},"ip":"77.7.36.34","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000001","data":"e3458dfd171ee57a"}})");
+            R"({"country_code":"DE","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 11","os":"iOS","os_version":"16.5","browser":"safari","browser_version":"16.5","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1","accept_language":"","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":414,"height":896,"pixel_ratio":2},"ip":"77.7.36.34","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000001","data":"c9d3e7931dda7213"}})");
     dasmig::device_request r = at(year{2026} / 10 / 1);
     r.platform = "ios-phone";
     r.locale = "pt-BR";
     REQUIRE(gen.get_device(r, std::uint64_t{7}).to_json() ==
-            R"({"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"26.7","browser":"safari","browser_version":"26.7","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.7 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"e3458dfd171ee57a"}})");
+            R"({"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"26.7","browser":"safari","browser_version":"26.7","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.7 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"c9d3e7931dda7213"}})");
     r = at(year{2021} / 6 / 1);
     r.platform = "windows-desktop";
     r.safe = true;
     REQUIRE(gen.get_device(r, std::uint64_t{3}).to_json() ==
-            R"({"country_code":"IN","platform":"windows-desktop","platform_label":"Windows PC","kind":"desktop","maker":"HP","model":"","os":"Windows","os_version":"10","browser":"chrome","browser_version":"91","engine":"Blink","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36","accept_language":"","screen":{"width":1707,"height":960,"pixel_ratio":1.5},"ip":"2001:db8:179:a0f2:ada2:1e3d:d4bf:77a","ip_version":6,"reserved":true,"signature":{"seed":"0000000000000003","data":"e3458dfd171ee57a"}})");
+            R"({"country_code":"IN","platform":"windows-desktop","platform_label":"Windows PC","kind":"desktop","maker":"HP","model":"","os":"Windows","os_version":"10","browser":"chrome","browser_version":"91","engine":"Blink","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36","accept_language":"","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":1707,"height":960,"pixel_ratio":1.5},"ip":"2001:db8:179:a0f2:ada2:1e3d:d4bf:77a","ip_version":6,"reserved":true,"signature":{"seed":"0000000000000003","data":"c9d3e7931dda7213"}})");
 
     std::uint64_t h = 0xcbf29ce484222325ULL;
     for (std::uint64_t s = 0; s < 10000; ++s)
@@ -774,7 +881,7 @@ TEST_CASE("known answers for fixed seeds", "[kat]")
             h *= 0x100000001b3ULL;
         }
     }
-    REQUIRE(h == 0xd6effa69b539ccb3ULL);
+    REQUIRE(h == 0xba9c1bdff4039135ULL);
 }
 
 // ---------------------------------------------------------------------------
@@ -943,5 +1050,5 @@ TEST_CASE("device batch: known answer of 10,000 items", "[batch][kat]")
     gen.for_each_device({}, {.count = 10000, .threads = 4}, 1, [&](std::uint64_t, const dasmig::device& item) {
         hash = dasmig::core::hash_combine(hash, dasmig::core::fnv1a64(item.to_json()));
     });
-    REQUIRE(hash == 0x2ca5b55a3dc46630ULL);
+    REQUIRE(hash == 0x55ce7e25df3f1bc2ULL);
 }

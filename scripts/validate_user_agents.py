@@ -30,6 +30,8 @@ BROWSER_FAMILIES = {
     "edge": {"Edge", "Edge Mobile"},
     "firefox": {"Firefox", "Firefox Mobile", "Firefox iOS"},
     "samsung": {"Samsung Internet"},
+    "opera": {"Opera"},
+    "yandex": {"Yandex Browser"},
 }
 OS_FAMILIES = {
     "Android": {"Android"},

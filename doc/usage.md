@@ -60,7 +60,7 @@ gen.load(std::filesystem::path{"my/data"});   // a directory with countries.tsv 
 | `country` | drawn by internet users | ISO 3166-1 alpha-2 code, any case |
 | `platform` | drawn by the country's shares | `android-phone`, `ios-phone`, `windows-desktop`, `macos-desktop`, `ipad`, `android-tablet`, `linux-desktop`, `chromeos-desktop`, `other` (user-generator's keys) |
 | `kind` | any | `device_kind::phone`, `tablet`, `desktop` or `other`; narrows the platform draw |
-| `browser` | drawn by the OS's shares | `chrome`, `safari`, `edge`, `firefox`, `samsung`; a drawn platform is one that has it |
+| `browser` | drawn by the OS's shares | `chrome`, `safari`, `edge`, `firefox`, `samsung`, `opera`, `yandex`; a drawn country and platform are ones that have it |
 | `locale` | empty | BCP 47 tag for `Accept-Language`; empty leaves the header empty |
 | `reference_date` | 2023-07-01 | the day the device is seen; from 2021-01-01 |
 | `ip` | `ip_version::any` | `any` (IPv6 with the country's IPv6 share), `v4`, `v6` |
@@ -88,6 +88,7 @@ Fixing a field never changes the other fields' draws: `get_device({.country = d.
 | `browser`, `browser_version`, `engine` | `chrome`, `126`, `WebKit` (every iOS browser is WebKit) |
 | `user_agent` | the `User-Agent` header |
 | `accept_language` | `pt-BR,pt;q=0.9,en;q=0.8` |
+| `sec_ch_ua`, `sec_ch_ua_mobile`, `sec_ch_ua_platform` | `"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"`, `?0`, `"Windows"`: the client hints Chrome and Edge 96 and later send outside iOS; empty otherwise |
 | `screen` | `{width, height, pixel_ratio}` in CSS pixels, portrait for phones and tablets |
 | `ip`, `ip_version`, `reserved` | `2804:38a:96bb:5ece:67b6:b52a:7139:f2d1`, `6`, `false` |
 
@@ -95,7 +96,7 @@ Fixing a field never changes the other fields' draws: `get_device({.country = d.
 
 ## Dates and Versions
 
-The reference date decides which models exist and which OS and browser versions are out. Versions spread after release and fade once the next version is out, so soon after a release most devices are still on the previous one; a device stays on the last version it can run (an iPhone 8 on iOS 16, Chrome 109 on Windows 7). The user agent follows the browser's format at that version: Chrome on Android sends its model before Chrome 110 and `Android 10; K` from 110, and iOS 26 and later send the frozen `iPhone OS 18_6`.
+The reference date decides which models exist and which OS and browser versions are out, and moves maker and browser shares along their trends (shares in the data are those of 2025; Huawei phones outside China are about three times as common in 2021). Versions spread after release and fade once the next version is out, so soon after a release most devices are still on the previous one; a device stays on the last version it can run (an iPhone 8 on iOS 16, Chrome 109 on Windows 7). The user agent follows the browser's format at that version: Chrome on Android sends its model before Chrome 110 and `Android 10; K` from 110, and iOS 26 and later send the frozen `iPhone OS 18_6`.
 
 ```cpp
 dasmig::device_request then;
@@ -158,7 +159,7 @@ In the default `override` mode a row replaces the loaded row with the same key a
 `to_json()` writes every field and a `signature` with the seed and `data_hash()`, the hash of the loaded tables and layers:
 
 ```json
-{"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"27.0","browser":"safari","browser_version":"27.0","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"…"}}
+{"country_code":"PK","platform":"ios-phone","platform_label":"iPhone","kind":"phone","maker":"Apple","model":"iPhone 15 Plus","os":"iOS","os_version":"27.0","browser":"safari","browser_version":"27.0","engine":"WebKit","user_agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1","accept_language":"pt-BR,pt;q=0.9,en;q=0.8","client_hints":{"sec_ch_ua":"","sec_ch_ua_mobile":"","sec_ch_ua_platform":""},"screen":{"width":430,"height":932,"pixel_ratio":3},"ip":"125.209.109.2","ip_version":4,"reserved":false,"signature":{"seed":"0000000000000007","data":"…"}}
 ```
 
 `to_json(core::json_writer&)` writes into a larger document.

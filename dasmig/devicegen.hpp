@@ -89,7 +89,8 @@ struct device_request
     std::optional<device_kind> kind{}; // NOLINT(readability-redundant-member-init)
 
     /// @brief Force a browser by key (`chrome`, `safari`, `edge`, `firefox`,
-    ///        `samsung`). The platform, when drawn, is one that has it.
+    ///        `samsung`, `opera`, `yandex`). The platform, when drawn, is one
+    ///        that has it.
     std::optional<std::string> browser{}; // NOLINT(readability-redundant-member-init)
 
     /// @brief A BCP 47 locale (`pt-BR`; letters, digits, `-` and `_`, at most
@@ -143,6 +144,9 @@ class device
     std::string engine;          ///< `Blink`, `WebKit` or `Gecko`.
     std::string user_agent;      ///< The `User-Agent` header this device sends.
     std::string accept_language; ///< The `Accept-Language` header; empty without a locale.
+    std::string sec_ch_ua;          ///< The `Sec-CH-UA` client hint (Chrome and Edge 96 and later, not on iOS); empty otherwise.
+    std::string sec_ch_ua_mobile;   ///< The `Sec-CH-UA-Mobile` client hint (`?1` on phones, `?0` otherwise); empty when not sent.
+    std::string sec_ch_ua_platform; ///< The `Sec-CH-UA-Platform` client hint (`"Android"`, `"Windows"`, ...); empty when not sent.
     device_screen screen;        ///< The screen.
     std::string ip;              ///< IP address (dotted quad or RFC 5952 text).
     int ip_version{4};           ///< 4 or 6.
@@ -193,6 +197,12 @@ class device
             .field("engine", engine)
             .field("user_agent", user_agent)
             .field("accept_language", accept_language)
+            .key("client_hints")
+            .begin_object()
+            .field("sec_ch_ua", sec_ch_ua)
+            .field("sec_ch_ua_mobile", sec_ch_ua_mobile)
+            .field("sec_ch_ua_platform", sec_ch_ua_platform)
+            .end_object()
             .key("screen")
             .begin_object()
             .field("width", screen.width)
@@ -243,6 +253,8 @@ class device
         if (key == "edge") return "Edge";
         if (key == "firefox") return "Firefox";
         if (key == "samsung") return "Samsung Internet";
+        if (key == "opera") return "Opera";
+        if (key == "yandex") return "Yandex Browser";
         return std::string{key};
     }
 
@@ -375,6 +387,7 @@ class dvg
             ua_full = browser.full;
             d.engine = engine_(d.browser, p.os);
             d.user_agent = render_ua_(d, p, mdl, os_release, ua_full);
+            client_hints_(d);
         }
         d.accept_language = accept_language_(request.locale);
         d.screen = pick_screen_(request, country.code, p, mdl, call);
@@ -682,7 +695,7 @@ class dvg
             return {.key = {"key"}, .required = {"label", "device", "os", "weight"}, .optional = {}};
         case table::platform_shares: return {.key = {"country", "key"}, .required = {"weight"}, .optional = {}};
         case table::maker_shares:
-            return {.key = {"country", "platform", "maker"}, .required = {"weight"}, .optional = {}};
+            return {.key = {"country", "platform", "maker"}, .required = {"weight"}, .optional = {"trend"}};
         case table::models:
             return {.key = {"key"},
                     .required = {"maker", "platform", "model", "released", "os_first", "weight"},
@@ -697,7 +710,7 @@ class dvg
         case table::bundled:
             return {.key = {"os", "os_version", "browser"}, .required = {"min_browser"}, .optional = {}};
         case table::browser_shares:
-            return {.key = {"country", "os", "browser"}, .required = {"weight"}, .optional = {}};
+            return {.key = {"country", "os", "browser"}, .required = {"weight"}, .optional = {"trend"}};
         case table::ua_templates:
             return {.key = {"browser", "os", "min_browser", "min_os"}, .required = {"template"}, .optional = {}};
         case table::screens:
@@ -810,6 +823,16 @@ class dvg
     };
 
     using weighted_keys = std::vector<std::pair<std::string, double>>;
+
+    // A share that changes with the date: `weight` at trend_reference_day_,
+    // times (1 + trend) per year before or after it (`growth` is ln(1 + trend)).
+    struct trended_key
+    {
+        std::string key;
+        double weight{0.0};
+        double growth{0.0};
+    };
+    using trended_keys = std::vector<trended_key>;
     template <typename V> using string_map = std::map<std::string, V, std::less<>>;
 
     struct model
@@ -820,7 +843,7 @@ class dvg
         std::optional<core::discrete> country_pick;   // over drawable, by users
         std::vector<platform_row> platforms;
         string_map<weighted_keys> platform_shares;    // country -> key, percent
-        string_map<weighted_keys> maker_shares;       // country \t platform -> maker, weight
+        string_map<trended_keys> maker_shares;        // country \t platform -> maker, weight, trend
         std::vector<model_row> models;
         string_map<std::vector<std::size_t>> models_by; // platform \t maker -> model indices
         string_map<std::vector<release>> releases;    // product -> by date
@@ -829,7 +852,7 @@ class dvg
         string_map<string_map<std::vector<std::pair<int, double>>>> version_shares; // product -> version -> (day, share)
         string_map<std::vector<requirement>> requirements; // browser \t os
         string_map<std::vector<std::pair<version_parts, int>>> bundled; // browser \t os -> OS version, min browser
-        string_map<weighted_keys> browser_shares;     // country \t os -> browser, weight
+        string_map<trended_keys> browser_shares;      // country \t os -> browser, weight, trend
         string_map<std::vector<ua_template>> ua_templates; // browser \t os
         string_map<std::vector<screen_row>> screens;  // country \t os
         string_map<ipv4_set> ipv4;
@@ -853,6 +876,14 @@ class dvg
         const auto s = row.get<double>(column);
         if (std::isnan(s) || s < 0.0 || s > 1.0) throw row.error(column, "must be between 0 and 1");
         return s;
+    }
+
+    // ln(1 + trend) of an optional `trend` column (relative change per year, above -1).
+    static double growth_(const core::tsv_row& row)
+    {
+        const auto trend = row.get_or<double>("trend", 0.0);
+        if (!(trend > -1.0) || !std::isfinite(trend)) throw row.error("trend", "must be a number above -1");
+        return trend == 0.0 ? 0.0 : core::math::log(1.0 + trend);
     }
 
     static std::string country_or_any_(const core::tsv_row& row, std::string_view column = "country")
@@ -1121,6 +1152,7 @@ class dvg
         case table::browser_shares:
             (void)country_or_any_(row);
             (void)weight_(row);
+            (void)growth_(row);
             break;
         case table::models: validate_models_(row); break;
         case table::releases:
@@ -1191,8 +1223,8 @@ class dvg
             m.platform_shares[row.get<std::string>("country")].emplace_back(row.get<std::string>("key"), weight_(row));
         for (const auto& row : rows(table::maker_shares))
         {
-            m.maker_shares[join_({country_or_any_(row), row.get<std::string>("platform")})].emplace_back(
-                row.get<std::string>("maker"), weight_(row));
+            m.maker_shares[join_({country_or_any_(row), row.get<std::string>("platform")})].push_back(
+                {.key = row.get<std::string>("maker"), .weight = weight_(row), .growth = growth_(row)});
         }
         for (const auto& row : rows(table::models))
         {
@@ -1264,8 +1296,8 @@ class dvg
         const auto rows = [&](table t) { return rows_(tbl, t); };
         for (const auto& row : rows(table::browser_shares))
         {
-            m.browser_shares[join_({country_or_any_(row), row.get<std::string>("os")})].emplace_back(
-                row.get<std::string>("browser"), weight_(row));
+            m.browser_shares[join_({country_or_any_(row), row.get<std::string>("os")})].push_back(
+                {.key = row.get<std::string>("browser"), .weight = weight_(row), .growth = growth_(row)});
         }
         for (const auto& row : rows(table::ua_templates))
         {
@@ -1450,6 +1482,17 @@ class dvg
         return std::ranges::any_of(weights, [](double w) { return w > 0.0; });
     }
 
+    // The day trends are measured from: shares in the data are those of 2025-01-01.
+    static constexpr int trend_reference_day_ = 20089;
+
+    // A trended share at a day.
+    static double weight_at_(const trended_key& k, int day)
+    {
+        if (k.growth == 0.0) return k.weight;
+        const double years = static_cast<double>(day - trend_reference_day_) / 365.25;
+        return core::math::fenced(k.weight * core::math::exp(core::math::fenced(k.growth * years)));
+    }
+
     // A model's weight at a day: grows for `ramp` days, then halves every `half_life`.
     static double adoption_weight_(const adoption_row& a, int age)
     {
@@ -1522,14 +1565,22 @@ class dvg
         }
         if (!m.country_pick) throw std::runtime_error("device-generator: no country has addresses");
         auto r = call.split("country");
+        if (!request.browser && request.weighted) return m.countries[m.drawable[(*m.country_pick)(r)]];
+        // A requested browser narrows the draw to countries where some platform has it.
         std::vector<double> w;
         w.reserve(m.drawable.size());
-        for (const auto i : m.drawable) w.push_back(m.countries[i].users);
-        return m.countries[m.drawable[request.weighted ? (*m.country_pick)(r) : pick_index_(w, false, r)]];
+        for (const auto i : m.drawable)
+        {
+            const auto& c = m.countries[i];
+            w.push_back(!request.browser || country_has_browser_(c.code, *request.browser) ? c.users : 0.0);
+        }
+        if (!any_positive_(w))
+            throw std::invalid_argument("device-generator: no country has the browser " + request.browser.value_or(""));
+        return m.countries[m.drawable[pick_index_(w, request.weighted, r)]];
     }
 
     // The browsers of an OS in a country, with their weights (the country's rows, else the default).
-    [[nodiscard]] const weighted_keys* browsers_of_(std::string_view country, std::string_view os) const
+    [[nodiscard]] const trended_keys* browsers_of_(std::string_view country, std::string_view os) const
     {
         if (const auto it = _model.browser_shares.find(join_({country, os})); it != _model.browser_shares.end())
             return &it->second;
@@ -1539,13 +1590,22 @@ class dvg
     }
 
     // The makers of a platform in a country (the country's rows, else the default).
-    [[nodiscard]] const weighted_keys* makers_of_(std::string_view country, std::string_view platform) const
+    [[nodiscard]] const trended_keys* makers_of_(std::string_view country, std::string_view platform) const
     {
         if (const auto it = _model.maker_shares.find(join_({country, platform})); it != _model.maker_shares.end())
             return &it->second;
         if (const auto it = _model.maker_shares.find(join_({"*", platform})); it != _model.maker_shares.end())
             return &it->second;
         return nullptr;
+    }
+
+    // Whether some platform with a share in the country can have the browser.
+    [[nodiscard]] bool country_has_browser_(std::string_view country, std::string_view browser) const
+    {
+        const auto weights = base_platform_weights_(country);
+        for (std::size_t i = 0; i < weights.size(); ++i)
+            if (weights[i] > 0.0 && platform_has_browser_(country, _model.platforms[i], browser)) return true;
+        return false;
     }
 
     // Whether a platform can have a browser in a country: the OS lists it, and
@@ -1555,12 +1615,12 @@ class dvg
     {
         const auto* list = browsers_of_(country, p.os);
         if (list == nullptr) return false;
-        if (!std::ranges::any_of(*list, [&](const auto& b) { return b.first == browser && b.second > 0.0; }))
+        if (!std::ranges::any_of(*list, [&](const auto& b) { return b.key == browser && b.weight > 0.0; }))
             return false;
         if (browser != "samsung") return true;
         const auto* makers = makers_of_(country, p.key);
         return makers != nullptr &&
-               std::ranges::any_of(*makers, [](const auto& m) { return m.first == "Samsung" && m.second > 0.0; });
+               std::ranges::any_of(*makers, [](const auto& m) { return m.key == "Samsung" && m.weight > 0.0; });
     }
 
     // A platform's percentage in a country's shares, if the country lists it.
@@ -1651,13 +1711,13 @@ class dvg
         if (list == nullptr) return {};
         std::vector<double> w;
         w.reserve(list->size());
-        for (const auto& [maker, weight] : *list)
+        for (const auto& k : *list)
         {
-            const bool wanted = request.browser != "samsung" || maker == "Samsung";
-            w.push_back(wanted && maker_has_model_(p.key, maker, day) ? weight : 0.0);
+            const bool wanted = request.browser != "samsung" || k.key == "Samsung";
+            w.push_back(wanted && maker_has_model_(p.key, k.key, day) ? weight_at_(k, day) : 0.0);
         }
         if (!any_positive_(w)) return {};
-        return (*list)[pick_index_(w, request.weighted, r)].first;
+        return (*list)[pick_index_(w, request.weighted, r)].key;
     }
 
     const model_row* pick_model_(const device_request& request, const platform_row& p, std::string_view maker,
@@ -1833,10 +1893,10 @@ class dvg
         };
         std::vector<double> w;
         w.reserve(list->size());
-        for (const auto& [b, weight] : *list)
+        for (const auto& b : *list)
         {
-            const bool wanted = !request.browser || *request.browser == b;
-            w.push_back(wanted && weight > 0.0 && available(b) ? weight : 0.0);
+            const bool wanted = !request.browser || *request.browser == b.key;
+            w.push_back(wanted && b.weight > 0.0 && available(b.key) ? weight_at_(b, day) : 0.0);
         }
         if (!any_positive_(w))
         {
@@ -1846,7 +1906,7 @@ class dvg
             return {};
         }
         auto r = call.split("browser");
-        const auto& key = (*list)[pick_index_(w, request.weighted, r)].first;
+        const auto& key = (*list)[pick_index_(w, request.weighted, r)].key;
 
         browser_pick out{.key = key, .version = {}, .full = {}};
         if (key == "safari" && apple_mobile)
@@ -1868,6 +1928,40 @@ class dvg
         if (browser == "safari" || os == "iOS" || os == "iPadOS") return "WebKit";
         if (browser == "firefox") return "Gecko";
         return "Blink";
+    }
+
+    // The low-entropy client hints Chromium sends with every request: Chrome and
+    // Edge from 96 (earlier versions changed their format several times), not on
+    // iOS, where every browser is WebKit. The brand list mixes a "GREASE" brand
+    // into Chromium's and the browser's, ordered and spelled by the major version
+    // as Chromium's GenerateBrandVersionList does.
+    static void client_hints_(device& d)
+    {
+        const int major = major_(d.browser_version);
+        if ((d.browser != "chrome" && d.browser != "edge") || d.os == "iOS" || d.os == "iPadOS" || major < 96) return;
+        static constexpr std::array<std::string_view, 11> grease_chars{" ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
+        static constexpr std::array<std::string_view, 3> grease_versions{"8", "99", "24"};
+        static constexpr std::array<std::array<std::size_t, 3>, 6> orders{
+            {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}}};
+        const auto seed = static_cast<std::size_t>(major);
+        std::string grease_brand = " Not A;Brand"; // 96 to 102, and 104
+        std::string grease_version = "99";
+        if (major == 103) grease_brand = ".Not/A)Brand";
+        if (major >= 105)
+        {
+            grease_brand = std::format("Not{}A{}Brand", grease_chars.at(seed % 11), grease_chars.at((seed + 1) % 11));
+            grease_version = grease_versions.at(seed % 3);
+        }
+        const std::string version = std::to_string(major);
+        const auto entry = [](std::string_view brand, std::string_view v) { return std::format(R"("{}";v="{}")", brand, v); };
+        std::array<std::string, 3> list;
+        const auto order = major >= 103 ? orders.at(seed % 6) : orders.at(0);
+        list.at(order[0]) = entry(grease_brand, grease_version);
+        list.at(order[1]) = entry("Chromium", version);
+        list.at(order[2]) = entry(d.browser == "edge" ? "Microsoft Edge" : "Google Chrome", version);
+        d.sec_ch_ua = list[0] + ", " + list[1] + ", " + list[2];
+        d.sec_ch_ua_mobile = d.kind == "phone" ? "?1" : "?0";
+        d.sec_ch_ua_platform = "\"" + std::string{d.os == "ChromeOS" ? "Chrome OS" : d.os} + "\"";
     }
 
     static int major_(std::string_view version)

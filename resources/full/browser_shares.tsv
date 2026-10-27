@@ -1,29 +1,75 @@
-# Browsers by OS and country, relative weights. Country * is the default; a country's rows replace it for that OS. Samsung Internet is only drawn on Samsung devices. Rounded from StatCounter's browser shares by platform (curated); see doc/data.md.
-country	os	browser	weight
-*	Android	chrome	85
-*	Android	samsung	18
-*	Android	firefox	1.5
-*	Android	edge	0.8
-*	iOS	safari	87
-*	iOS	chrome	10
-*	iOS	firefox	1
-*	iOS	edge	1
-*	iPadOS	safari	85
-*	iPadOS	chrome	12
-*	iPadOS	firefox	1
-*	iPadOS	edge	1
-*	Windows	chrome	72
-*	Windows	edge	16
-*	Windows	firefox	8
-*	macOS	safari	52
-*	macOS	chrome	40
-*	macOS	firefox	5
-*	macOS	edge	3
-*	Linux	chrome	58
-*	Linux	firefox	40
-*	ChromeOS	chrome	100
-KR	Android	samsung	40
-KR	Android	chrome	60
-DE	Windows	chrome	55
-DE	Windows	firefox	22
-DE	Windows	edge	18
+# Browsers by OS and country, relative weights as of 2025-01-01; trend is the relative change per year before and after (Edge on Windows 0.06). Country * is the default; a country's rows replace it for that OS. Samsung Internet is only drawn on Samsung devices. Rounded from StatCounter's browser shares by platform (curated); see doc/data.md.
+country	os	browser	weight	trend
+*	Android	chrome	85	
+*	Android	samsung	18	-0.03
+*	Android	firefox	1.5	-0.05
+*	Android	edge	0.8	
+*	ChromeOS	chrome	100	
+*	Linux	chrome	58	
+*	Linux	firefox	40	-0.03
+*	Linux	opera	1	-0.03
+*	Windows	chrome	72	
+*	Windows	edge	16	0.06
+*	Windows	firefox	8	-0.08
+*	Windows	opera	4	-0.03
+*	iOS	safari	87	
+*	iOS	chrome	10	0.03
+*	iOS	firefox	1	-0.05
+*	iOS	edge	1	
+*	iPadOS	safari	85	
+*	iPadOS	chrome	12	0.03
+*	iPadOS	firefox	1	-0.05
+*	iPadOS	edge	1	
+*	macOS	safari	52	
+*	macOS	chrome	40	
+*	macOS	firefox	5	-0.08
+*	macOS	edge	3	
+*	macOS	opera	2	-0.03
+BY	Android	chrome	78	
+BY	Android	yandex	12	
+BY	Android	samsung	8	-0.03
+BY	Android	firefox	2	-0.05
+BY	Windows	chrome	60	
+BY	Windows	yandex	15	
+BY	Windows	opera	10	-0.03
+BY	Windows	edge	8	0.06
+BY	Windows	firefox	7	-0.08
+BY	macOS	safari	40	
+BY	macOS	chrome	40	
+BY	macOS	yandex	12	
+BY	macOS	firefox	4	-0.08
+BY	macOS	opera	4	-0.03
+DE	Windows	chrome	55	
+DE	Windows	firefox	22	-0.08
+DE	Windows	edge	18	0.06
+DE	Windows	opera	3	-0.03
+KR	Android	samsung	40	-0.03
+KR	Android	chrome	60	
+KZ	Android	chrome	78	
+KZ	Android	yandex	12	
+KZ	Android	samsung	8	-0.03
+KZ	Android	firefox	2	-0.05
+KZ	Windows	chrome	60	
+KZ	Windows	yandex	15	
+KZ	Windows	opera	10	-0.03
+KZ	Windows	edge	8	0.06
+KZ	Windows	firefox	7	-0.08
+KZ	macOS	safari	40	
+KZ	macOS	chrome	40	
+KZ	macOS	yandex	12	
+KZ	macOS	firefox	4	-0.08
+KZ	macOS	opera	4	-0.03
+RU	Android	chrome	72	
+RU	Android	yandex	18	
+RU	Android	samsung	8	-0.03
+RU	Android	firefox	2	-0.05
+RU	Windows	chrome	55	
+RU	Windows	yandex	22	
+RU	Windows	opera	8	-0.03
+RU	Windows	edge	8	0.06
+RU	Windows	firefox	7	-0.08
+RU	macOS	safari	40	
+RU	macOS	chrome	40	
+RU	macOS	yandex	12	
+RU	macOS	firefox	4	-0.08
+RU	macOS	opera	4	-0.03
