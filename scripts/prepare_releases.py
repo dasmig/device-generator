@@ -32,6 +32,7 @@ Usage: python scripts/prepare_releases.py [--refresh]
 import argparse
 import datetime
 import json
+import re
 import urllib.request
 from pathlib import Path
 
@@ -71,8 +72,8 @@ def endoflife(product, refresh):
     data = fetch(EOL.format(product), f"endoflife-{product}.json", refresh)["result"]["releases"]
     rows = []
     for r in data:
-        if not r.get("releaseDate"):
-            continue
+        if not r.get("releaseDate") or not re.fullmatch(r"[0-9]+(\.[0-9]+)*", r["name"]):
+            continue  # undated, or a variant such as Android 4.4W (Wear)
         latest = (r.get("latest") or {}).get("name") or ""
         rows.append((r["name"], r["releaseDate"], latest))
     return rows
@@ -92,14 +93,14 @@ def chromium(platform, refresh):
 
 def firefox(refresh):
     data = fetch(FIREFOX, "firefox.json", refresh)["releases"]
-    rows = []
+    first = {}
     for r in data.values():
         if r["category"] != "major":
             continue
-        version = r["version"]
-        major = version.split(".")[0]
-        rows.append((major, r["date"], version))
-    return rows
+        major = r["version"].split(".")[0]
+        if major not in first or r["date"] < first[major][0]:
+            first[major] = (r["date"], r["version"])  # 33.1 is listed as a major too
+    return [(major, date, version) for major, (date, version) in first.items()]
 
 
 def main():
@@ -110,6 +111,8 @@ def main():
     rows = []
     for product in ("ios", "ipados", "android", "macos"):
         for version, released, latest in endoflife(product, args.refresh):
+            if product == "android" and version == "12.1":
+                continue  # 12L, for tablets and foldables; phones went from 12 to 13
             rows.append((product, version, released, latest))
     rows += [("windows", v, d, nt) for v, d, nt in WINDOWS]
     chrome = chromium("Windows", args.refresh)

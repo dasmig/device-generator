@@ -1,14 +1,14 @@
-# How a version or model spreads: its weight grows linearly for ramp_days after release, then halves every half_life_days. Products listed in version_shares.tsv use those shares instead. Curated, checked against published version shares; see doc/data.md.
+# How a version or model spreads. A model's weight grows linearly for ramp_days after release, then halves every half_life_days. An OS or browser version grows the same way and starts halving once the next version it could update to is out, so the last version a system can run keeps its users. Products listed in version_shares.tsv use those shares instead. Curated, checked against published version shares; see doc/data.md.
 product	ramp_days	half_life_days
 ios	45	150
 ipados	60	200
 android	540	730
 macos	180	500
-chrome	14	35
-chrome-ios	14	40
-edge	14	35
-firefox	14	40
-samsung	60	120
+chrome	14	21
+chrome-ios	14	21
+edge	14	21
+firefox	14	25
+samsung	60	90
 safari	45	150
 model:ios-phone	90	900
 model:ipad	120	1100

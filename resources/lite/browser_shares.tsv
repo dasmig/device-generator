@@ -1,7 +1,7 @@
 # Browsers by OS and country, relative weights. Country * is the default; a country's rows replace it for that OS. Samsung Internet is only drawn on Samsung devices. Rounded from StatCounter's browser shares by platform (curated); see doc/data.md.
 country	os	browser	weight
 *	Android	chrome	85
-*	Android	samsung	10
+*	Android	samsung	18
 *	Android	firefox	1.5
 *	Android	edge	0.8
 *	iOS	safari	87

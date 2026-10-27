@@ -4,7 +4,6 @@ android	4.1	2012-07-09
 android	4.2	2012-11-13	
 android	4.3	2013-07-24	
 android	4.4	2013-10-31	
-android	4.4w	2014-03-31	
 android	5.0	2014-11-12	
 android	5.1	2015-03-01	
 android	6.0	2015-10-05	
@@ -16,7 +15,6 @@ android	9	2018-08-06
 android	10	2019-09-03	
 android	11	2020-09-08	
 android	12	2021-10-04	
-android	12.1	2022-03-07	
 android	13	2022-08-15	
 android	14	2023-10-04	
 android	15	2024-09-03	
@@ -364,7 +362,6 @@ firefox	30	2014-06-10	30.0
 firefox	31	2014-07-22	31.0
 firefox	32	2014-09-02	32.0
 firefox	33	2014-10-14	33.0
-firefox	33	2014-11-10	33.1
 firefox	34	2014-12-01	34.0
 firefox	35	2015-01-13	35.0
 firefox	36	2015-02-24	36.0
